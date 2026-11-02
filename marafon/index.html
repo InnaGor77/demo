@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Лёгкая неделя · марафон</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Marck+Script&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Цвета марафона — меняйте здесь */
+    --bg: #F4F0E6;                     /* кремовый фон */
+    --card: #FFFDF8;
+    --deep: #1B2619;                   /* самый тёмный оливковый, им же красится шапка Telegram */
+    --olive: #2E3D2A;
+    --sage: #66755A;
+    --text: #1F2A1E;
+    --about: #414C3E;
+    --muted: #727C6C;
+    --line: rgba(46, 61, 42, .12);
+    --lime: #C9DC6B;                   /* акцент */
+    --lime-soft: #E4EBBD;
+    --veg: #7DA45F;                    /* части тарелки */
+    --protein: #D98A52;
+    --carb: #E2B84F;
+    --fat: #A8A85C;
+    --main-btn: #2E3D2A;               /* цвет родной кнопки Telegram (только сплошной цвет) */
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --script: "Marck Script", cursive;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); overflow-x: hidden; }
+  body {
+    color: var(--text); background: var(--bg);
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 15px; line-height: 1.5; min-height: 100vh; overflow-x: hidden; font-variant-numeric: lining-nums;
+  }
+  #app { position: relative; max-width: 560px; min-height: 100vh; margin: 0 auto; overflow-x: clip; background: var(--bg); }
+  button, input { font-family: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; }
+  .loading { padding-top: 42vh; text-align: center; color: var(--muted); }
+  .in-tg .browser-only { display: none; }
+
+  /* Появление блоков */
+  .rise { opacity: 0; animation: rise .8s var(--ease) forwards; animation-delay: var(--d, 0s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  .btn { display: block; width: 100%; padding: 16px; border-radius: 18px; background: var(--olive); color: #fff; font-size: 15px; font-weight: 700; text-align: center; transition: transform .2s var(--ease); }
+  .btn:active { transform: scale(.98); }
+  .btn.lime { background: var(--lime); color: var(--deep); }
+  .btn.ghost { background: var(--lime-soft); color: var(--olive); }
+  .link { display: block; margin: 12px auto 0; font-size: 13.5px; font-weight: 700; color: var(--olive); border-bottom: 1.5px solid var(--lime); }
+  .note { margin-top: 20px; font-size: 12px; text-align: center; color: var(--muted); }
+  .hand { font-family: var(--script); font-size: 27px; line-height: 1.2; color: var(--lime); }
+  .gate .hand, .hero-home .hand { font-size: 24px; }
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--lime); }
+  .glass { background: rgba(255, 255, 255, .11); border: 1px solid rgba(255, 255, 255, .24); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .round { position: absolute; left: 16px; top: 16px; z-index: 4; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--text); box-shadow: 0 6px 16px rgba(46, 61, 42, .16); font-size: 19px; }
+
+  /* Тёмные шапки: крупные листья */
+  .hero { position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 26px 20px 58px; color: #fff; background: var(--deep); }
+  .hero-bg { position: absolute; inset: -4%; background: url(img/leaves.webp) center 30% / cover; animation: slowzoom 22s ease-in-out infinite alternate; }
+  @keyframes slowzoom { from { transform: scale(1); } to { transform: scale(1.1) translateY(-8px); } }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 29, 18, .35) 0%, rgba(20, 29, 18, .2) 40%, rgba(20, 29, 18, .85) 100%); }
+  .hero > *:not(.hero-bg):not(.round) { position: relative; z-index: 1; }
+  .hero-day { min-height: 468px; }
+  .hero-home { min-height: 430px; }
+  .hero-text { margin-top: auto; padding-top: 70px; }
+  .hero h1 { font-family: var(--serif); font-weight: 600; font-size: 46px; line-height: .98; margin: 10px 0 2px; }
+  .hero-home h1 { font-size: 56px; }
+  .in-tg .hero-day .hero-text { padding-top: 30px; }
+
+  /* Отрезки прогресса: по одному на день */
+  .segs { display: flex; gap: 4px; margin-top: 14px; }
+  .segs i { display: block; flex: 1; height: 5px; border-radius: 9px; background: rgba(255, 255, 255, .24); overflow: hidden; }
+  .segs b { display: block; width: 0; height: 100%; border-radius: 9px; background: var(--lime); transition: width .9s var(--ease); }
+
+  /* Плашка с общим прогрессом на главной */
+  .progress { display: flex; gap: 14px; align-items: center; margin-top: 18px; padding: 10px 14px 10px 10px; border-radius: 22px; }
+  .progress p { font-size: 13.5px; line-height: 1.35; }
+  .progress b { display: block; font-size: 15px; font-weight: 700; }
+
+  /* Кольцо с процентом */
+  .ring { flex: none; position: relative; width: 84px; height: 84px; }
+  .ring svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 6; }
+  .ring .bg { stroke: var(--lime-soft); }
+  .ring .val { stroke: var(--olive); stroke-linecap: round; transition: stroke-dashoffset 1s var(--ease); }
+  .ring > b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 27px; font-weight: 700; }
+  .on-dark .bg { stroke: rgba(255, 255, 255, .18); }
+  .on-dark .val { stroke: var(--lime); }
+  .progress .ring { width: 66px; height: 66px; }
+  .progress .ring > b { font-size: 21px; }
+
+  /* Кремовый лист поверх шапки */
+  .sheet { position: relative; z-index: 2; margin-top: -30px; padding: 26px 20px 36px; border-radius: 30px 30px 0 0; background: var(--bg); }
+  .lead { font-size: 15.5px; color: var(--about); }
+  .sec { margin-top: 34px; }
+  .sec > h2 { font-family: var(--serif); font-weight: 600; font-size: 33px; line-height: 1.02; }
+  .sec > h2 + .hand { display: block; margin-top: -1px; color: var(--sage); font-size: 22px; }
+
+  /* Вход по коду */
+  .gate { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; min-height: 100vh; padding: 26px 22px calc(30px + env(safe-area-inset-bottom)); color: #fff; background: var(--deep); }
+  .gate::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 29, 18, .2) 0%, rgba(20, 29, 18, .55) 45%, rgba(20, 29, 18, .95) 100%); }
+  .gate > *:not(.hero-bg) { position: relative; z-index: 1; }
+  .gate-face { display: block; width: min(68vw, 280px); aspect-ratio: 1; margin: 0 auto 22px; border-radius: 50%; object-fit: cover; border: 3px solid var(--lime); box-shadow: 0 18px 34px rgba(0, 0, 0, .45); animation: rise .9s var(--ease) both; }
+  .expert { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+  .expert small { display: block; font-size: 12.5px; opacity: .85; }
+  .expert img { flex: none; width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--lime); }
+  .gate h1 { font-family: var(--serif); font-weight: 600; font-size: 54px; line-height: .95; margin-top: 8px; }
+  .gate p { margin: 10px 0 18px; font-size: 14.5px; opacity: .9; }
+  .gate input { display: block; width: 100%; margin-bottom: 10px; padding: 15px; border-radius: 18px; color: #fff; font-size: 20px; font-weight: 700; letter-spacing: .14em; text-align: center; outline: none; }
+  .gate input:focus { border-color: var(--lime); }
+  .gate input::placeholder { font-size: 15px; font-weight: 500; letter-spacing: 0; color: rgba(255, 255, 255, .75); }
+  .err { min-height: 22px; margin-top: 9px; font-size: 13.5px; font-weight: 600; text-align: center; color: #F2C9A8; }
+  .gate-hint { font-size: 13px; text-align: center; opacity: .8; }
+
+  /* Главная: день сегодня */
+  .now { display: block; width: 100%; padding: 18px 17px; text-align: left; border-radius: 24px; background: var(--card); box-shadow: 0 12px 30px rgba(46, 61, 42, .08); }
+  .now-kicker { font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sage); }
+  .now h2 { font-family: var(--serif); font-weight: 700; font-size: 29px; line-height: 1.04; margin: 5px 0 7px; }
+  .now p { font-size: 14px; color: var(--muted); }
+  .now-plates { display: flex; margin-top: 13px; }
+  .now-plates img, .now-plates svg { width: 76px; height: 76px; margin-right: -14px; filter: drop-shadow(0 7px 9px rgba(46, 61, 42, .24)); }
+  .now .btn { margin-top: 15px; }
+
+  /* Календарь */
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 14px; }
+  .tile { min-width: 0; padding: 9px 0 10px; border-radius: 15px; text-align: center; line-height: 1.1; background: var(--card); transition: transform .2s var(--ease); }
+  .tile:active { transform: scale(.93); }
+  .tile small { display: block; font-size: 11px; font-weight: 600; }
+  .tile > b { display: block; margin: 3px 0 7px; font-family: var(--serif); font-size: 24px; font-weight: 700; line-height: 1; }
+  .tile svg { display: block; width: 14px; height: 14px; margin: 0 auto; }
+  .tile.done { background: var(--lime-soft); color: var(--olive); }
+  .tile.done path { fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tile.open { background: var(--olive); color: #fff; box-shadow: 0 8px 18px rgba(46, 61, 42, .3); }
+  .tile.locked { background: transparent; box-shadow: inset 0 0 0 1px var(--line); color: #A3AB9D; }
+  .tile .dot { display: block; width: 7px; height: 7px; margin: 3.5px auto; border-radius: 50%; background: var(--lime); }
+
+  /* Материалы */
+  .mats { margin-top: 14px; }
+  .mat { margin-bottom: 8px; border-radius: 18px; background: var(--card); }
+  .mat-head { display: flex; gap: 10px; align-items: center; width: 100%; padding: 13px 15px; text-align: left; }
+  .mat-head > span { flex: 1; min-width: 0; font-family: var(--serif); font-size: 21px; font-weight: 700; line-height: 1.1; }
+  .mat-head small { display: block; margin-top: 2px; font-family: "Manrope", sans-serif; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .mat-head i { flex: none; font-style: normal; font-size: 21px; line-height: 1; color: var(--sage); transition: transform .25s var(--ease); }
+  .mat-head svg { flex: none; width: 16px; height: 16px; color: #A3AB9D; }
+  .mat.open .mat-head i { transform: rotate(45deg); }
+  .mat-body { display: none; padding: 0 15px 15px; font-size: 14px; color: var(--about); }
+  .mat.open .mat-body { display: block; animation: rise .4s var(--ease); }
+  .mat-body p + p, .mat-body ul + p, .mat-body p + ul { margin-top: 8px; }
+  .mat-body ul { padding-left: 18px; }
+  .mat-body li { margin: 3px 0; }
+  .mat.locked .mat-head > span { color: #8E988A; }
+  .mat.locked .mat-head { cursor: default; }
+
+  /* Панель пробной версии */
+  .demo { margin-top: 30px; padding: 15px; border-radius: 20px; border: 1.5px dashed var(--sage); font-size: 13.5px; color: var(--about); }
+  .demo b { display: block; margin-bottom: 3px; color: var(--olive); }
+  .demo-row { display: flex; gap: 7px; margin-top: 11px; }
+  .demo-row button { flex: 1; padding: 11px 4px; border-radius: 13px; background: var(--lime-soft); font-size: 13px; font-weight: 700; color: var(--olive); }
+  .contact { margin-top: 18px; }
+
+  /* Подкаст */
+  .player { display: flex; gap: 12px; align-items: center; margin-top: 18px; padding: 10px 14px 10px 10px; border-radius: 22px; }
+  .play { flex: none; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: var(--deep); transition: transform .2s var(--ease); }
+  .play:active { transform: scale(.9); }
+  .play svg { width: 19px; height: 19px; }
+  .player-main { flex: 1; min-width: 0; }
+  .player-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .player-top b { font-size: 14px; font-weight: 700; }
+  .bars { display: flex; gap: 3px; align-items: center; height: 18px; }
+  .bars i { display: block; width: 3px; height: 100%; border-radius: 3px; background: rgba(255, 255, 255, .55); transform: scaleY(var(--h)); }
+  .playing .bars i { background: var(--lime); animation: bar 1s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -.17s); }
+  @keyframes bar { from { transform: scaleY(.2); } to { transform: scaleY(1); } }
+  .seek { display: block; width: 100%; height: 16px; margin: 2px 0 0; background: none; accent-color: var(--lime); cursor: pointer; }
+  .player-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; opacity: .85; }
+  .speed { padding: 0 7px; border-radius: 8px; background: rgba(255, 255, 255, .17); color: #fff; font-size: 12px; font-weight: 700; }
+  .audio-err { margin-top: 8px; font-size: 13px; font-weight: 600; color: #F2C9A8; }
+
+  /* Тарелки: фото вылезает за край карточки и экрана.
+     --plate зависит от ширины экрана, а отступ текста считается от него: тарелка не заезжает на текст */
+  .meals { display: grid; gap: 22px; margin-top: 26px; }
+  .meal { --plate: clamp(126px, 44vw, 178px); position: relative; display: block; width: 100%; min-height: 132px; padding: 17px calc(var(--plate) - 20px) 16px 17px; text-align: left; border-radius: 24px; background: var(--card); box-shadow: 0 12px 30px rgba(46, 61, 42, .08); transition: transform .25s var(--ease); }
+  .meal:active { transform: scale(.98); }
+  .meal-pic { position: absolute; right: -32px; top: 50%; width: var(--plate); height: var(--plate); margin-top: calc(var(--plate) / -2); filter: drop-shadow(0 14px 16px rgba(46, 61, 42, .24)); transform: rotate(-28deg) scale(.82); transition: transform 1.1s var(--ease); }
+  .meal.in .meal-pic { transform: none; }
+  .meal-when { font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--sage); }
+  .meal h3 { font-family: var(--serif); font-weight: 700; font-size: 24px; line-height: 1.05; margin: 4px 0 8px; }
+  .meal-meta { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .meal-go { display: inline-block; margin-top: 9px; font-size: 12.5px; font-weight: 700; color: var(--olive); border-bottom: 1.5px solid var(--lime); }
+
+  /* Вода: тёмный блок */
+  .water { position: relative; overflow: hidden; margin: 34px -20px 0; padding: 28px 20px 26px; color: #fff; background: var(--olive); }
+  .water::before { content: ""; position: absolute; inset: 0; background: url(img/leaves.webp) center 75% / cover; opacity: .32; }
+  .water > * { position: relative; }
+  .water-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+  .water h2 { font-family: var(--serif); font-weight: 600; font-size: 33px; line-height: 1; }
+  .water-num { flex: none; font-family: var(--serif); font-weight: 600; font-size: 50px; line-height: .8; color: var(--lime); }
+  .water-num small { font-size: 24px; color: rgba(255, 255, 255, .7); }
+  .glasses { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; margin: 20px 0 12px; }
+  .glass-btn { padding: 2px 0; transition: transform .2s var(--ease); }
+  .glass-btn:active { transform: scale(.88); }
+  .glass-btn svg { display: block; width: 100%; max-width: 36px; height: 44px; margin: 0 auto; overflow: visible; }
+  .glass-btn .w { transform: translateY(30px); transition: transform .65s cubic-bezier(.25, 1.25, .5, 1); }
+  .glass-btn.full .w { transform: none; }
+  .glass-btn .outline { fill: rgba(255, 255, 255, .08); stroke: rgba(255, 255, 255, .6); stroke-width: 1.6; }
+  .water p { font-size: 13px; opacity: .8; }
+
+  /* Витамины: круглые фото */
+  .sups { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .sup { display: block; padding: 14px 12px 13px; text-align: center; border-radius: 24px; background: var(--card); box-shadow: 0 12px 30px rgba(46, 61, 42, .07); }
+  .sup img { display: block; width: 104px; height: 104px; margin: 0 auto 10px; border-radius: 50%; object-fit: cover; transition: transform .5s var(--ease); }
+  .sup.on img { transform: scale(.94); }
+  .sup h3 { font-family: var(--serif); font-size: 23px; font-weight: 700; line-height: 1.05; }
+  .sup small { display: block; margin-top: 2px; font-size: 12.5px; line-height: 1.3; color: var(--muted); }
+  .sup-mark { display: inline-flex; gap: 7px; align-items: center; margin-top: 9px; font-size: 13px; font-weight: 700; }
+  .sup-mark .tick { width: 24px; height: 24px; }
+  .sup-mark .tick svg { width: 13px; height: 13px; }
+  .sup-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+
+  /* Галочки */
+  .tick { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.6px #B9C3AE; transition: background .25s, box-shadow .25s, transform .4s cubic-bezier(.3, 1.8, .5, 1); }
+  .tick svg { width: 15px; height: 15px; }
+  .tick path { fill: none; stroke: var(--deep); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset .3s .08s ease-out; }
+  .on .tick { background: var(--lime); box-shadow: none; transform: scale(1.08); }
+  .on .tick path { stroke-dashoffset: 0; }
+
+  /* Итог дня */
+  .summary { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+  .summary p { font-size: 13.5px; color: var(--muted); }
+  .checks { margin-top: 14px; padding: 4px 16px; border-radius: 24px; background: var(--card); box-shadow: 0 12px 30px rgba(46, 61, 42, .07); }
+  .check { display: flex; gap: 12px; align-items: center; width: 100%; padding: 13px 0; text-align: left; font-size: 14.5px; font-weight: 600; border-bottom: 1px solid var(--line); }
+  .check:last-child { border-bottom: 0; }
+  .finish { margin-top: 16px; }
+  .finish-note { margin-top: 16px; font-size: 13px; text-align: center; color: var(--muted); }
+
+  /* Карточка блюда.
+     --dish: размер фото. Высота шапки и отступ текста считаются от него, поэтому на любой ширине блюдо заходит на лист одинаково */
+  .dish-top { --dish: min(92vw, 420px); position: relative; height: calc(var(--dish) + 2px); background: radial-gradient(90% 90% at 50% 30%, #EEF3CF 0%, #CFDD9A 100%); }
+  .dish-img { position: absolute; z-index: 3; left: 50%; top: 34px; width: var(--dish); height: var(--dish); margin-left: calc(var(--dish) / -2); animation: dishin 1s var(--ease) both, float 6s 1s ease-in-out infinite; filter: drop-shadow(0 22px 22px rgba(46, 61, 42, .3)); pointer-events: none; }
+  @keyframes dishin { from { opacity: 0; transform: translateY(-34px) scale(.8) rotate(-9deg); } to { opacity: 1; transform: none; } }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+  .dish-sheet { position: relative; z-index: 2; margin-top: -26px; padding: 84px 20px 40px; border-radius: 30px 30px 0 0; background: var(--bg); }
+  .dish-head { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
+  .dish-head h1 { font-family: var(--serif); font-weight: 700; font-size: 35px; line-height: 1; }
+  .time { flex: none; margin-top: 6px; padding: 5px 11px; border-radius: 99px; background: var(--lime-soft); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+  .dish-text { margin-top: 10px; font-size: 14.5px; color: var(--about); }
+  .nutri { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; margin-top: 16px; padding: 14px 6px; border-radius: 20px; background: var(--card); box-shadow: 0 10px 26px rgba(46, 61, 42, .07); text-align: center; }
+  .nutri div + div { border-left: 1px solid var(--line); }
+  .nutri b { display: block; font-family: var(--serif); font-size: 27px; font-weight: 700; line-height: 1; }
+  .nutri small { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  .parts { margin-top: 24px; }
+  .parts-title, .list-head { font-family: var(--serif); font-weight: 600; font-size: 25px; }
+  .bar { display: flex; gap: 2px; height: 14px; margin-top: 10px; border-radius: 99px; overflow: hidden; }
+  .bar i { display: block; width: 0; transition: width 1s var(--ease); }
+  .legend { display: grid; gap: 5px; margin-top: 10px; font-size: 13.5px; }
+  .legend div { display: flex; gap: 8px; align-items: baseline; }
+  .legend i { flex: none; width: 9px; height: 9px; border-radius: 50%; align-self: center; }
+  .legend span { flex: 1; min-width: 0; color: var(--about); }
+  .legend b { font-weight: 700; }
+  .tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; margin-top: 26px; padding: 4px; border-radius: 99px; background: var(--lime-soft); }
+  .tabs::before { content: ""; position: absolute; left: 4px; top: 4px; bottom: 4px; width: calc(50% - 4px); border-radius: 99px; background: var(--olive); transition: transform .35s var(--ease); }
+  .tabs.second::before { transform: translateX(100%); }
+  .tab { position: relative; padding: 10px; font-size: 14px; font-weight: 700; transition: color .25s; }
+  .tabs:not(.second) .tab:first-child, .tabs.second .tab:last-child { color: #fff; }
+  .list-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; }
+  .list-head small { font-family: "Manrope", sans-serif; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .ingr { display: flex; gap: 12px; align-items: center; width: 100%; margin-top: 8px; padding: 12px 14px; text-align: left; border-radius: 16px; background: var(--card); }
+  .ingr-main { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 600; line-height: 1.25; }
+  .ingr-main small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .have { font-size: 12px; font-weight: 700; color: var(--sage); opacity: 0; transform: translateX(6px); transition: opacity .25s, transform .25s; }
+  .ingr.on .have { opacity: 1; transform: none; }
+  .step { display: flex; gap: 12px; margin-top: 14px; font-size: 14.5px; animation: rise .5s var(--ease) both; animation-delay: calc(var(--i) * .07s); }
+  .step b { flex: none; width: 28px; font-family: var(--serif); font-size: 27px; font-weight: 700; line-height: 1; color: var(--sage); }
+
+  /* Окна поверх экрана */
+  .over { position: fixed; inset: 0; z-index: 20; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; background: rgba(18, 26, 16, .55); animation: fade .3s; }
+  @keyframes fade { from { opacity: 0; } }
+  .done { position: relative; width: 100%; max-width: 560px; padding: 30px 24px calc(26px + env(safe-area-inset-bottom)); text-align: center; color: #fff; border-radius: 30px 30px 0 0; background: var(--olive); animation: up .55s var(--ease); }
+  @keyframes up { from { transform: translateY(100%); } }
+  .done-num { font-family: var(--serif); font-size: 84px; font-weight: 600; line-height: .9; color: var(--lime); }
+  .done h2 { font-family: var(--serif); font-size: 32px; font-weight: 600; margin-top: 6px; }
+  .done p { margin: 6px 0 16px; font-size: 14.5px; opacity: .88; }
+  .done .link { color: #fff; }
+  .leaf { position: absolute; top: -30px; z-index: 21; width: 14px; height: 20px; border-radius: 0 100% 0 100%; animation: fall var(--t) linear forwards; animation-delay: var(--d); pointer-events: none; }
+  @keyframes fall { to { transform: translate(var(--x), 105vh) rotate(var(--r)); } }
+
+  /* Итог марафона */
+  .res-hero { padding: 30px 22px 62px; text-align: center; }
+  .res-hero .ring { width: 158px; height: 158px; margin: 20px auto 14px; }
+  .res-hero .ring .val { transition-duration: 1.6s; }
+  .res-hero .ring > b { font-size: 50px; font-weight: 600; }
+  .res-hero h1 { font-size: 36px; line-height: 1.02; margin: 0; }
+  .res-hero p { margin-top: 10px; font-size: 14.5px; opacity: .9; }
+  .ups { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .up { padding: 13px 14px; border-radius: 20px; background: var(--card); box-shadow: 0 10px 26px rgba(46, 61, 42, .07); font-size: 12.5px; color: var(--muted); }
+  .up b { display: block; margin-top: 2px; font-family: var(--serif); font-size: 21px; font-weight: 700; line-height: 1.08; color: var(--text); }
+  .stat { margin-top: 14px; font-size: 14px; font-weight: 600; }
+  .stat-row { display: flex; justify-content: space-between; gap: 10px; }
+  .stat-row span:last-child { flex: none; color: var(--muted); font-weight: 700; }
+  .track { height: 9px; margin-top: 6px; border-radius: 99px; background: var(--lime-soft); overflow: hidden; }
+  .track i { display: block; width: 0; height: 100%; border-radius: 99px; background: var(--olive); transition: width 1.2s var(--ease); }
+  .days { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; align-items: end; height: 130px; margin-top: 16px; }
+  .days div { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-width: 0; text-align: center; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+  .days i { display: block; height: 0; margin-bottom: 5px; border-radius: 9px 9px 3px 3px; background: linear-gradient(180deg, var(--lime), var(--veg)); transition: height 1.1s var(--ease); }
+  .res-btns { display: grid; gap: 8px; margin-top: 26px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .reveal, .step { animation: none; opacity: 1; transform: none; transition: none; }
+    .hero-bg, .dish-img, .gate-face, .playing .bars i { animation: none; }
+    .meal-pic { transform: none; transition: none; }
+    .leaf { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Открываем марафон…</div></div>
+<audio id="aud" preload="none"></audio>
+
+<script>
+/* ============================ Содержимое марафона ============================
+   Для нового потока: поменять streamId, accessCodes и startDate.
+   startDate: дата старта в виде "2026-11-10". "auto" только для пробной версии:
+   марафон начинается в день первого входа.
+   demo: true показывает подсказку с кодом и панель пробной версии. Для настоящего потока false.
+   openDays: сколько первых дней открыто в примере для заказчика, вместо итога участницы показывается sampleResult.
+   Чтобы пройти все дни, уберите openDays: в панели появится «перемотка». В настоящем потоке openDays убрать.
+   photoDays: для скольких первых дней уже есть фото img/d<день>-morning.webp, -lunch, -evening.
+   У остальных дней вместо фото рисуется схема тарелки.
+   Части тарелки: veg — овощи и фрукты, protein — белок, carb — крупы и хлеб, fat — полезные жиры.
+   Второе число в части — какую долю тарелки она занимает, в процентах. */
+const CONFIG = {
+  demo: true,
+  streamId: "demo1",
+  accessCodes: ["7777"],
+  startDate: "auto",
+  openDays: 1,
+  // Цифры для примера итога: выполнено дней по каждому пункту из checklist и процент по каждому дню
+  sampleResult: { stats: [6, 7, 6, 3, 4, 5], days: [50, 33, 83, 67, 100, 83, 100] },
+  photoDays: 1,
+  title: "Лёгкая неделя",
+  expertRole: "нутрициолог",
+  expertName: "Алёна Берёзова",
+  expertPhoto: "img/expert.webp",
+  gateText: "Семь дней спокойной еды без подсчёта калорий и запретов. Код доступа приходит в чат участниц перед стартом.",
+  curatorLabel: "Написать куратору",
+  curatorUrl: "https://t.me/innagorulko",
+  footnote: "Пример для показа. Рекомендации общие и не заменяют консультацию врача. Калории примерные.",
+  waterGoal: 8,
+  waterNote: "Нажимайте на стакан, когда выпили. Стакан примерно 250 мл, чай без сахара тоже считаем. Если врач ограничил вам воду, следуйте его рекомендации.",
+  supplements: [
+    { id: "omega", title: "Омега-3", when: "за завтраком, 1 капсула", img: "img/omega.webp" },
+    { id: "vitd", title: "Витамин D", when: "за обедом, по назначению", img: "img/vitd.webp" },
+  ],
+  supNote: "Только если добавки подобрал врач или куратор. Если вам их не назначали, отметьте пункт в итоге дня.",
+  checklist: [
+    { id: "water", title: "Вода" },
+    { id: "morning", title: "Завтрак по тарелке" },
+    { id: "lunch", title: "Обед по тарелке" },
+    { id: "evening", title: "Ужин по тарелке" },
+    { id: "sup", title: "Витамины" },
+    { id: "audio", title: "Подкаст дня" },
+  ],
+  days: [
+    {
+      title: "Вода и спокойный завтрак",
+      hand: "начинаем мягко",
+      tip: "Сегодня ничего не считаем и не взвешиваем. Выпейте стакан воды, как только проснётесь, и позавтракайте в первые два часа. Идеальный день нам не нужен.",
+      audio: "audio/day1.mp3",
+      meals: {
+        morning: { dish: "Скрэмбл с томатами на тосте", short: "Скрэмбл на тосте", time: "10 мин", kcal: 390, p: 20, f: 18, c: 37,
+          text: "Мягкие яйца на хрустящем хлебе, рядом обжаренные томаты черри и горсть свежего шпината. Сытно до самого обеда.",
+          parts: [["protein", 40, "яйца"], ["veg", 35, "томаты, шпинат"], ["carb", 25, "цельнозерновой хлеб"]],
+          ingr: [["Яйца", "2 шт."], ["Цельнозерновой хлеб", "1 толстый ломоть"], ["Томаты черри", "8 шт."], ["Шпинат", "большая горсть"], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Подсушите хлеб в тостере или на сухой сковороде.", "Разрежьте томаты пополам и обжарьте на масле срезом вниз 3–4 минуты, выложите на тарелку.", "На той же сковороде на слабом огне медленно помешивайте взбитые яйца, пока они не станут мягкими хлопьями.", "Выложите яйца на хлеб, посолите и поперчите, рядом положите томаты и свежий шпинат."] },
+        lunch: { dish: "Курица с гречкой и хрустящим салатом", short: "Курица с гречкой", time: "25 мин", kcal: 550, p: 55, f: 17, c: 45,
+          text: "Та самая тарелка на каждый день: половина овощей, четверть белка, четверть крупы.",
+          parts: [["veg", 50, "огурцы, капуста, зелень"], ["protein", 25, "куриная грудка"], ["carb", 25, "гречка"]],
+          ingr: [["Куриная грудка", "150 г"], ["Гречка варёная", "180 г"], ["Огурцы и капуста", "150 г"], ["Зелень", "небольшой пучок"], ["Оливковое масло", "2 ч. л."]],
+          steps: ["Отварите гречку. Сухой крупы понадобится примерно 60 г.", "Натрите курицу солью и паприкой, обжарьте на гриль-сковороде по 5–6 минут с каждой стороны и дайте полежать.", "Нашинкуйте капусту, нарежьте огурцы и зелень, заправьте маслом.", "Соберите тарелку: половину займёт салат, а другую половину поделят курица и гречка."] },
+        evening: { dish: "Запечённая треска с брокколи и кабачком", short: "Треска с брокколи", time: "30 мин", kcal: 465, p: 54, f: 19, c: 20,
+          text: "Лёгкий ужин из духовки: рыба и овощи готовятся вместе, поэтому посуды почти не остаётся.",
+          parts: [["veg", 60, "брокколи, кабачок"], ["protein", 30, "треска"], ["fat", 10, "оливковое масло"]],
+          ingr: [["Филе трески", "200 г"], ["Брокколи", "200 г"], ["Кабачок", "150 г"], ["Лимон", "2 ломтика"], ["Оливковое масло", "1 ст. л."]],
+          steps: ["Разогрейте духовку до 200 градусов.", "Разберите брокколи на соцветия, кабачок нарежьте кружками, смешайте с маслом и солью.", "Выложите овощи на противень и запекайте 10 минут.", "Добавьте треску с лимоном и запекайте ещё 12–15 минут."] },
+      },
+    },
+    {
+      title: "Половина тарелки овощей",
+      hand: "овощи вперёд",
+      tip: "Посмотрите на тарелку перед обедом и ужином. Примерно половину занимают овощи: свежие, тушёные или запечённые, какие больше нравятся. Если овощей в рационе обычно мало, начните с привычных и добавляйте понемногу.",
+      audio: "audio/day2.mp3",
+      meals: {
+        morning: { dish: "Творог с ягодами и грецкими орехами", short: "Творог с ягодами", time: "5 мин", kcal: 420, p: 37, f: 23, c: 17,
+          text: "Завтрак, на который уходит пять минут. Замороженные ягоды подойдут не хуже свежих.",
+          parts: [["protein", 55, "творог 5%"], ["veg", 30, "ягоды"], ["fat", 15, "грецкие орехи"]],
+          ingr: [["Творог 5%", "200 г"], ["Ягоды", "100 г"], ["Грецкие орехи", "небольшая горсть"]],
+          steps: ["Если ягоды замороженные, разморозьте их заранее или подержите минуту в тёплой воде.", "Выложите творог в миску и разомните вилкой.", "Добавьте ягоды, сверху посыпьте рублеными орехами."] },
+        lunch: { dish: "Индейка с булгуром и тушёными овощами", short: "Индейка с булгуром", time: "30 мин", kcal: 510, p: 47, f: 14, c: 48,
+          text: "Сладкий перец и морковь тушатся до мягкости и делают обед ярким и сытным.",
+          parts: [["veg", 50, "перец, морковь"], ["protein", 25, "индейка"], ["carb", 25, "булгур"]],
+          ingr: [["Филе индейки", "150 г"], ["Булгур варёный", "180 г"], ["Сладкий перец", "1 шт."], ["Морковь", "1 шт."], ["Оливковое масло", "2 ч. л."]],
+          steps: ["Отварите булгур. Сухой крупы понадобится примерно 60 г.", "Нарежьте перец и морковь, тушите на масле с ложкой воды 10–12 минут.", "Индейку нарежьте кусочками и обжарьте 7–8 минут.", "Соберите тарелку: половина овощи, остальное поровну индейка и булгур."] },
+        evening: { dish: "Тёплый салат с яйцом и белой фасолью", short: "Салат с яйцом и фасолью", time: "15 мин", kcal: 390, p: 22, f: 21, c: 28,
+          text: "Почти без готовки, когда к вечеру сил уже мало. Консервированная фасоль здесь очень выручает.",
+          parts: [["veg", 55, "стручковая фасоль, листья салата"], ["protein", 35, "яйца, белая фасоль"], ["fat", 10, "оливковое масло"]],
+          ingr: [["Яйца", "2 шт."], ["Белая фасоль консервированная", "100 г"], ["Стручковая фасоль", "150 г"], ["Листья салата", "горсть"], ["Оливковое масло", "2 ч. л."]],
+          steps: ["Сварите яйца всмятку, 6 минут.", "Отварите стручковую фасоль 4 минуты в подсоленной воде.", "Смешайте с промытой белой фасолью и листьями, заправьте маслом.", "Сверху выложите половинки яиц."] },
+      },
+    },
+    {
+      title: "Белок в каждый приём пищи",
+      hand: "сытость надолго",
+      tip: "Если после обеда тянет на сладкое, часто причина в том, что белка было мало. Сегодня следим, чтобы в каждой тарелке было яйцо, рыба, мясо, творог или бобовые. Порция примерно с вашу ладонь.",
+      audio: "audio/day3.mp3",
+      meals: {
+        morning: { dish: "Сырники из духовки с яблоком", short: "Сырники из духовки", time: "30 мин", kcal: 470, p: 43, f: 16, c: 39,
+          text: "Без масла на сковороде и без стояния у плиты. Сделайте сразу на два дня, холодными они тоже вкусные.",
+          parts: [["protein", 55, "творог, яйцо"], ["veg", 30, "яблоко"], ["carb", 15, "цельнозерновая мука"]],
+          ingr: [["Творог 5%", "200 г"], ["Яйцо", "1 шт."], ["Цельнозерновая мука", "2 ст. л."], ["Яблоко", "1 небольшое"]],
+          steps: ["Смешайте творог, яйцо и муку, сформируйте небольшие сырники.", "Выложите на противень с бумагой для выпечки.", "Запекайте 20 минут при 180 градусах.", "Подавайте с нарезанным яблоком."] },
+        lunch: { dish: "Суп с чечевицей и салат из капусты", short: "Суп с чечевицей", time: "40 мин", kcal: 480, p: 22, f: 12, c: 70,
+          text: "Густой суп, который легко заменяет и первое, и второе. На следующий день он ещё вкуснее.",
+          parts: [["veg", 50, "овощи в супе, капуста"], ["protein", 30, "чечевица"], ["carb", 20, "ржаной хлеб"]],
+          ingr: [["Чечевица сухая", "70 г"], ["Морковь и лук", "по 1 шт."], ["Томаты", "1 шт."], ["Белокочанная капуста", "100 г"], ["Ржаной хлеб", "1 ломтик"], ["Оливковое масло", "2 ч. л."]],
+          steps: ["Обжарьте лук и морковь на половине масла 5 минут.", "Добавьте томат, чечевицу и литр воды, варите 25 минут.", "Нашинкуйте капусту, посолите, заправьте остатками масла.", "Подавайте суп с салатом и ломтиком хлеба."] },
+        evening: { dish: "Говядина с овощным рагу", short: "Говядина с рагу", time: "50 мин", kcal: 400, p: 44, f: 17, c: 18,
+          text: "Пока мясо томится, можно заняться своими делами. Овощей в этой тарелке больше половины.",
+          parts: [["veg", 60, "баклажан, томаты, лук"], ["protein", 30, "нежирная говядина"], ["fat", 10, "йогуртовый соус"]],
+          ingr: [["Нежирная говядина", "150 г"], ["Баклажан", "½ шт."], ["Томаты", "2 шт."], ["Лук", "½ шт."], ["Греческий йогурт", "2 ст. л."], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Нарежьте мясо, обжарьте на масле и тушите с водой под крышкой 30 минут.", "Добавьте нарезанные овощи и тушите ещё 15 минут.", "Посолите в конце, добавьте зелень.", "Подавайте с ложкой йогурта."] },
+      },
+    },
+    {
+      title: "Перекус, который держит до ужина",
+      hand: "без печенья к кофе",
+      tip: "Перекус нужен, когда вы по-настоящему голодны или до следующей еды ещё далеко. Хорошо работает пара из белка и клетчатки: яблоко с горстью орехов, творог с ягодами, хлебец с сыром. Положите что-нибудь из этого в сумку с утра.",
+      audio: "audio/day4.mp3",
+      meals: {
+        morning: { dish: "Овсянка с варёным яйцом и грушей", short: "Овсянка с грушей", time: "15 мин", kcal: 350, p: 15, f: 11, c: 48,
+          text: "Обычная каша становится сытнее, когда рядом с ней есть белок. Яйцо можно сварить с вечера.",
+          parts: [["carb", 40, "овсянка"], ["protein", 30, "яйцо, молоко"], ["veg", 30, "груша"]],
+          ingr: [["Овсяные хлопья", "50 г"], ["Молоко", "100 мл"], ["Яйцо", "1 шт."], ["Груша", "1 небольшая"]],
+          steps: ["Сварите яйцо вкрутую, 9 минут.", "Залейте хлопья молоком и стаканом воды, варите 5–7 минут.", "Нарежьте грушу и выложите на кашу.", "Яйцо подайте рядом."] },
+        lunch: { dish: "Рыбные котлеты с бурым рисом и свёклой", short: "Рыбные котлеты", time: "35 мин", kcal: 520, p: 41, f: 14, c: 56,
+          text: "Минтай стоит недорого, а котлеты из него получаются нежными. Их удобно брать с собой на работу.",
+          parts: [["veg", 50, "свёкла, огурец, зелень"], ["protein", 25, "минтай"], ["carb", 25, "бурый рис"]],
+          ingr: [["Филе минтая", "200 г"], ["Бурый рис варёный", "150 г"], ["Варёная свёкла", "1 небольшая"], ["Огурец", "1 шт."], ["Панировочные сухари", "1 ст. л."], ["Оливковое масло", "2 ч. л."]],
+          steps: ["Измельчите рыбу в блендере с сухарями, посолите, сформируйте котлеты.", "Запекайте 15 минут при 200 градусах.", "Нарежьте свёклу и огурец, заправьте маслом.", "Подавайте с отваренным рисом."] },
+        evening: { dish: "Куриный салат с авокадо и редисом", short: "Салат с авокадо", time: "15 мин", kcal: 420, p: 43, f: 22, c: 12,
+          text: "Авокадо даёт полезные жиры и то самое ощущение, что поели как следует, но без тяжести.",
+          parts: [["veg", 55, "листья, огурец, редис"], ["protein", 30, "запечённая курица"], ["fat", 15, "авокадо"]],
+          ingr: [["Куриная грудка", "130 г"], ["Авокадо", "½ шт."], ["Листья салата", "2 горсти"], ["Огурец и редис", "по 1–2 шт."], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Запеките или обжарьте курицу, дайте немного остыть и нарежьте.", "Нарежьте огурец и редис, смешайте с листьями.", "Добавьте курицу и ломтики авокадо.", "Заправьте маслом и соком лимона."] },
+      },
+    },
+    {
+      title: "Лёгкий вечер",
+      hand: "вечер полегче",
+      tip: "Постарайтесь закончить ужин за три часа до сна. Если вечером тянет к холодильнику, выпейте воды и подождите минут пятнадцать. Голод остался? Значит, он настоящий, и лучше съесть творог или выпить кефир, чем терпеть до утра.",
+      audio: "audio/day5.mp3",
+      meals: {
+        morning: { dish: "Гречка с яйцом и томатами", short: "Гречка с яйцом", time: "20 мин", kcal: 380, p: 19, f: 17, c: 37,
+          text: "Вчерашняя гречка отлично подойдёт: разогреть, добавить яйцо, и завтрак готов.",
+          parts: [["carb", 35, "гречка"], ["protein", 30, "яйца"], ["veg", 35, "томаты, зелень"]],
+          ingr: [["Гречка варёная", "150 г"], ["Яйца", "2 шт."], ["Томаты", "1 шт."], ["Зелень", "пара веточек"], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Разогрейте гречку на сковороде с маслом.", "Сварите яйца всмятку или сделайте пашот.", "Нарежьте томаты и зелень.", "Соберите всё в одной миске."] },
+        lunch: { dish: "Тефтели из индейки с пюре и салатом", short: "Тефтели с пюре", time: "40 мин", kcal: 465, p: 39, f: 18, c: 36,
+          text: "Домашний обед, на котором не хочется себя ни в чём ограничивать. Картошка на тарелке тоже может быть.",
+          parts: [["veg", 50, "морковь, капуста"], ["protein", 25, "индейка"], ["carb", 25, "картофельное пюре"]],
+          ingr: [["Фарш из индейки", "150 г"], ["Картофель", "2 средних"], ["Молоко", "3 ст. л."], ["Морковь и капуста", "150 г"], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Отварите картофель и разомните с горячим молоком.", "Сформируйте тефтели из посоленного фарша и запекайте 20 минут при 190 градусах.", "Натрите морковь, нашинкуйте капусту, заправьте маслом.", "Выложите всё на тарелку."] },
+        evening: { dish: "Творожная запеканка с овощным салатом", short: "Запеканка с салатом", time: "45 мин", kcal: 460, p: 45, f: 19, c: 28,
+          text: "Много белка и мало возни. Сладкой запеканку делать не обязательно, с овощами она тоже хороша.",
+          parts: [["protein", 45, "творог, яйцо"], ["veg", 45, "огурцы, томаты, зелень"], ["fat", 10, "сметана"]],
+          ingr: [["Творог 5%", "200 г"], ["Яйцо", "1 шт."], ["Манная крупа", "1 ст. л."], ["Огурцы и томаты", "200 г"], ["Сметана", "1 ст. л."]],
+          steps: ["Смешайте творог, яйцо, манку и щепотку соли, дайте постоять 10 минут.", "Выложите в форму и запекайте 30 минут при 180 градусах.", "Нарежьте овощи и зелень.", "Подавайте запеканку с салатом и сметаной."] },
+      },
+    },
+    {
+      title: "Еда вне дома",
+      hand: "жизнь вне кухни",
+      tip: "Кафе, гости, столовая на работе. Собрать тарелку можно и там: ищите белок, просите овощи вместо второго гарнира, соус берите отдельно. Захотелось десерта в хорошей компании? Съешьте его с удовольствием.",
+      audio: "audio/day6.mp3",
+      meals: {
+        morning: { dish: "Бутерброды с лососем и яйцом", short: "Бутерброды с лососем", time: "10 мин", kcal: 380, p: 25, f: 16, c: 33,
+          text: "Завтрак, который выглядит как в кафе, а готовится быстрее, чем туда дойти.",
+          parts: [["protein", 35, "лосось, яйцо"], ["veg", 35, "огурец, листья салата"], ["carb", 30, "цельнозерновой хлеб"]],
+          ingr: [["Цельнозерновой хлеб", "2 ломтика"], ["Слабосолёный лосось", "60 г"], ["Яйцо", "1 шт."], ["Огурец", "½ шт."], ["Листья салата", "горсть"]],
+          steps: ["Сварите яйцо вкрутую и нарежьте кружками.", "Подсушите хлеб.", "Выложите листья, огурец, лосось и яйцо."] },
+        lunch: { dish: "Обед в кафе: овощной суп и рыба на гриле", short: "Обед в кафе", time: "в кафе", kcal: 490, p: 43, f: 14, c: 47,
+          text: "Пример заказа, который легко найти почти в любом меню. Гарнир берите, если правда хочется.",
+          parts: [["veg", 50, "овощной суп, овощи на гриле"], ["protein", 30, "рыба на гриле"], ["carb", 20, "рис"]],
+          ingr: [["Овощной суп", "небольшая порция"], ["Рыба на гриле", "порция"], ["Овощи вместо гарнира", "порция"], ["Рис", "по желанию, пара ложек"], ["Вода или чай без сахара", "1 стакан"]],
+          steps: ["Начните с супа или салата, заправку попросите отдельно.", "На горячее выберите рыбу или мясо на гриле.", "Попросите заменить второй гарнир овощами.", "Ешьте не спеша, остановиться можно и раньше, чем закончится порция."] },
+        evening: { dish: "Шакшука с зеленью", short: "Шакшука", time: "20 мин", kcal: 350, p: 18, f: 17, c: 32,
+          text: "Яйца в томатном соусе прямо на сковороде. Ломтик хлеба здесь нужен, чтобы собрать весь соус.",
+          parts: [["veg", 55, "томаты, перец, зелень"], ["protein", 30, "яйца"], ["carb", 15, "хлеб"]],
+          ingr: [["Яйца", "2 шт."], ["Томаты или томаты в соку", "300 г"], ["Сладкий перец", "½ шт."], ["Зелень", "пара веточек"], ["Цельнозерновой хлеб", "1 ломтик"], ["Оливковое масло", "1 ч. л."]],
+          steps: ["Обжарьте нарезанный перец на масле 5 минут.", "Добавьте томаты, посолите и тушите 8 минут.", "Сделайте два углубления и разбейте в них яйца, накройте крышкой на 4–5 минут.", "Посыпьте зеленью и подавайте с хлебом."] },
+      },
+    },
+    {
+      title: "Ваша тарелка на каждый день",
+      hand: "собираем сами",
+      tip: "Последний день. Соберите все три тарелки сами, из того, что любите, по знакомой схеме. Примеры ниже только для подсказки. Вечером завершите день и посмотрите свой итог марафона.",
+      audio: "audio/day7.mp3",
+      meals: {
+        morning: { dish: "Завтрак по схеме: яйцо, сыр и овощи на хлебе", short: "Завтрак по схеме", time: "10 мин", kcal: 400, p: 20, f: 20, c: 34,
+          text: "Возьмите любой белок, любые овощи и немного хлеба или каши. Это один из вариантов.",
+          parts: [["protein", 40, "яйцо, сыр"], ["veg", 35, "томаты, огурец"], ["carb", 25, "цельнозерновой хлеб"]],
+          ingr: [["Яйцо", "1 шт."], ["Сыр", "30 г"], ["Цельнозерновой хлеб", "2 ломтика"], ["Томат и огурец", "по ½ шт."]],
+          steps: ["Сварите яйцо или сделайте глазунью.", "Положите на хлеб сыр и яйцо.", "Рядом выложите нарезанные овощи."] },
+        lunch: { dish: "Обед по схеме: лосось с рисом и овощами", short: "Лосось с рисом", time: "25 мин", kcal: 470, p: 32, f: 18, c: 43,
+          text: "Половина овощи, четверть белок, четверть крупа. Лосось легко заменить любой рыбой или курицей.",
+          parts: [["veg", 50, "любые овощи"], ["protein", 25, "запечённый лосось"], ["carb", 25, "рис"]],
+          ingr: [["Филе лосося", "130 г"], ["Рис варёный", "130 г"], ["Овощи на выбор", "200 г"], ["Лимон", "1 ломтик"]],
+          steps: ["Отварите рис. Сухой крупы понадобится примерно 45 г.", "Запекайте лосось с лимоном 15 минут при 190 градусах.", "Приготовьте овощи так, как любите больше всего.", "Соберите тарелку по схеме."] },
+        evening: { dish: "Ужин полегче: тёплый овощной салат с курицей", short: "Тёплый салат с курицей", time: "25 мин", kcal: 440, p: 45, f: 20, c: 20,
+          text: "Овощей побольше, белок на выбор, немного полезных жиров. Этот ужин можно повторять и после марафона.",
+          parts: [["veg", 60, "овощи, можно тёплые"], ["protein", 30, "курица"], ["fat", 10, "масло, семечки"]],
+          ingr: [["Куриная грудка", "130 г"], ["Овощи для запекания", "250 г"], ["Оливковое масло", "2 ч. л."], ["Семечки тыквы", "1 ст. л."]],
+          steps: ["Запекайте овощи с маслом 20 минут при 200 градусах.", "Курицу обжарьте и нарежьте.", "Смешайте всё в миске и посыпьте семечками."] },
+      },
+    },
+  ],
+  // fromDay: с какого дня открывается. 0 — доступно ещё до старта.
+  materials: [
+    { fromDay: 0, title: "Что подготовить к старту", desc: "Прочитайте за пару дней до начала", html: "<p>Купить ничего особенного не придётся, хватит обычного магазина у дома. Найдите бутылку или стакан, из которого вам нравится пить воду, и поставьте на видное место.</p><p>Если у вас есть хронические заболевания, вы беременны или кормите грудью, покажите программу своему врачу до старта.</p>" },
+    { fromDay: 0, title: "Список покупок на первые дни", desc: "С ним удобно сходить в магазин", html: "<ul><li>Яйца, творог, курица или индейка, белая рыба</li><li>Гречка, булгур, цельнозерновой хлеб</li><li>Брокколи, кабачок, капуста, огурцы, томаты, зелень</li><li>Ягоды, можно замороженные, грецкие орехи</li><li>Оливковое масло</li></ul>" },
+    { fromDay: 3, title: "Сколько белка в продуктах", desc: "Шпаргалка к третьему дню", html: "<p>Примерно на 100 г продукта:</p><ul><li>Куриная грудка: 23 г</li><li>Белая рыба: 18 г</li><li>Творог 5%: 17 г</li><li>Варёная чечевица: 9 г</li></ul><p>Одно яйцо даёт около 6 г.</p>" },
+    { fromDay: 5, title: "Если вечером тянет на сладкое", desc: "Что попробовать по порядку", html: "<p>Сначала проверьте, плотным ли был ужин и хватило ли в нём белка. Потом выпейте воды или чая без сахара. Если хочется сладкого и через пятнадцать минут, съешьте фрукт или пару долек тёмного шоколада и спокойно идите спать.</p>" },
+    { fromDay: 6, title: "Что выбрать в кафе", desc: "Заказ, который легко повторить", html: "<ul><li>Суп или салат с заправкой отдельно</li><li>Мясо, рыба или птица на гриле, в духовке</li><li>Овощи вместо второго гарнира</li><li>Вода или чай вместо сладкого напитка</li></ul>" },
+  ],
+  // Текст итога выбирается по проценту: первая строка, где процент не меньше from.
+  bands: [
+    { from: 85, title: "Вы прошли марафон почти полностью", hand: "это сильный результат", text: "Такой результат получается у тех, кто правда включился в процесс. Сравните своё самочувствие с первым днём и напишите куратору, что изменилось." },
+    { from: 60, title: "Большая часть плана выполнена", hand: "основа уже есть", text: "Посмотрите ниже, что давалось сложнее всего: там и лежит ваш запас, при 100% результат был бы ещё заметнее." },
+    { from: 35, title: "Примерно половина пути", hand: "вы дошли до конца", text: "Результат напрямую зависит от того, какая часть рекомендаций выполнена, при 100% он был бы заметно лучше. Посмотрите, что чаще всего выпадало, и обсудите это с куратором." },
+    { from: 0, title: "План чаще оставался на бумаге", hand: "и это можно поправить", text: "Значит, темп оказался неудобным для вашей жизни. Напишите куратору, что мешало, и подберите посильный вариант на следующий раз." },
+  ],
+};
+
+/* ============================ Логика ============================ */
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTelegram = !!(tg && tg.platform && tg.platform !== "unknown");
+const app = document.getElementById("app");
+const aud = document.getElementById("aud");
+const TOTAL = CONFIG.days.length;
+
+const ICON = {
+  tick: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5"/></svg>',
+  lock: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2H12a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM6 7h4V5a2 2 0 0 0-4 0z"/></svg>',
+  play: '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5 2.8v14.4a.8.8 0 0 0 1.2.7l11.5-7.2a.8.8 0 0 0 0-1.4L6.2 2.1A.8.8 0 0 0 5 2.8z"/></svg>',
+  pause: '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><rect x="4" y="2.5" width="4.4" height="15" rx="1.2"/><rect x="11.6" y="2.5" width="4.4" height="15" rx="1.2"/></svg>',
+};
+const MEAL_NAMES = { morning: "Утро", lunch: "Обед", evening: "Вечер" };
+const PART = { veg: ["Овощи и фрукты", "var(--veg)"], protein: ["Белок", "var(--protein)"], carb: ["Крупы и хлеб", "var(--carb)"], fat: ["Полезные жиры", "var(--fat)"] };
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function haptic(kind = "light") {
+  if (inTelegram && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(kind);
+}
+
+// Ссылки на Telegram: сначала закрываем приложение, сразу после — открываем ссылку.
+// Если открыть ссылку первой, на iPhone приложение остаётся поверх.
+function openUrl(url) {
+  haptic();
+  if (!inTelegram) { window.open(url, "_blank"); return; }
+  if (url.startsWith("https://t.me/")) {
+    tg.close();
+    tg.openTelegramLink(url);
+  } else {
+    tg.openLink(url);
+  }
+}
+
+/* ---------- Хранение: прогресс каждого человека лежит в облаке Telegram и на устройстве ---------- */
+const META_KEY = CONFIG.streamId + "_meta";
+const dayKey = n => CONFIG.streamId + "_d" + n;
+const ALL_KEYS = [META_KEY, ...CONFIG.days.map((_, i) => dayKey(i + 1))];
+const hasCloud = inTelegram && tg.isVersionAtLeast && tg.isVersionAtLeast("6.9") && tg.CloudStorage;
+
+let meta = { in: false, start: null, off: 0 };
+const days = {};   // { номер дня: { c: [отмеченные пункты и витамины], w: стаканов воды, h: { "обед": [есть ингредиенты] }, f: 1 — день завершён } }
+
+function localGet(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function localSet(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
+function parse(value) {
+  try { return value ? JSON.parse(value) : null; } catch (e) { return null; }
+}
+function saveKey(key, obj) {
+  const value = JSON.stringify(obj);
+  localSet(key, value);
+  if (hasCloud) { try { tg.CloudStorage.setItem(key, value); } catch (e) {} }
+}
+const saveMeta = () => saveKey(META_KEY, meta);
+const saveDay = n => saveKey(dayKey(n), day(n));
+
+function applyStored(get) {
+  const m = parse(get(META_KEY));
+  if (m) meta = Object.assign(meta, m);
+  CONFIG.days.forEach((_, i) => {
+    const d = parse(get(dayKey(i + 1)));
+    if (d) days[i + 1] = d;
+  });
+}
+
+// Облако может ответить с задержкой. Не ждём дольше 2,5 секунды, тогда берём данные с устройства.
+function loadState() {
+  applyStored(localGet);
+  if (!hasCloud) return Promise.resolve();
+  return new Promise(resolve => {
+    const timer = setTimeout(resolve, 2500);
+    try {
+      tg.CloudStorage.getItems(ALL_KEYS, (err, values) => {
+        clearTimeout(timer);
+        if (!err && values) {
+          applyStored(key => values[key] || null);
+          ALL_KEYS.forEach(key => { if (values[key]) localSet(key, values[key]); });
+        }
+        resolve();
+      });
+    } catch (e) { clearTimeout(timer); resolve(); }
+  });
+}
+
+function clearState() {
+  ALL_KEYS.forEach(key => { try { localStorage.removeItem(key); } catch (e) {} });
+  if (hasCloud) { try { tg.CloudStorage.removeItems(ALL_KEYS); } catch (e) {} }
+  Object.keys(days).forEach(k => delete days[k]);
+}
+
+/* ---------- Даты: считаем в целых днях, чтобы не зависеть от часов и перевода времени ---------- */
+function realToday() {
+  const d = new Date();
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
+}
+function today() { return realToday() + (CONFIG.demo ? meta.off || 0 : 0); }
+function startNum() {
+  if (CONFIG.startDate !== "auto") return Math.floor(Date.parse(CONFIG.startDate + "T00:00:00Z") / 864e5);
+  return meta.start ?? realToday();
+}
+const dayDate = n => startNum() + n - 1;
+function fmt(num, opts) {
+  return new Date(num * 864e5).toLocaleDateString("ru-RU", Object.assign({ timeZone: "UTC" }, opts));
+}
+const fmtLong = num => fmt(num, { day: "numeric", month: "long" });
+const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? b : c;
+
+/* ---------- Состояние дней ---------- */
+function day(n) {
+  if (!days[n]) days[n] = { c: [], w: 0 };
+  return days[n];
+}
+const isDone = n => !!(days[n] && days[n].f);
+const dateReached = n => today() >= dayDate(n);
+const isPreview = n => !!CONFIG.openDays && n > CONFIG.openDays;
+const isOpen = n => !isPreview(n) && dateReached(n) && (n === 1 || isDone(n - 1));
+const allNums = () => CONFIG.days.map((_, i) => i + 1);
+const allDone = () => allNums().every(isDone);
+function currentDay() {
+  for (let n = 1; n <= TOTAL; n++) if (!isDone(n)) return n;
+  return null;
+}
+function lockReason(n) {
+  if (isPreview(n)) return "В настоящем марафоне день " + n + " откроется по календарю. В этом примере открыт первый день";
+  if (!dateReached(n)) return "День " + n + " откроется " + fmtLong(dayDate(n));
+  return "Сначала завершите день " + (n - 1);
+}
+
+function dayItems(n) {
+  return CONFIG.checklist.filter(it => it.id !== "audio" || CONFIG.days[n - 1].audio);
+}
+function itemOn(n, id) {
+  const d = days[n];
+  if (!d) return false;
+  const c = d.c || [];
+  if (id === "water") return (d.w || 0) >= CONFIG.waterGoal;
+  if (id === "sup") return CONFIG.supplements.every(s => c.includes("sup_" + s.id));
+  return c.includes(id);
+}
+function toggle(n, id) {
+  const d = day(n);
+  d.c = d.c.includes(id) ? d.c.filter(x => x !== id) : [...d.c, id];
+}
+function dayCounts(n) {
+  const items = dayItems(n);
+  return { done: items.filter(it => itemOn(n, it.id)).length, total: items.length };
+}
+function dayPct(n) {
+  const c = dayCounts(n);
+  return Math.round(c.done / c.total * 100);
+}
+// Процент по списку дней: считаем пункты, а не среднее по дням
+function pctOf(list) {
+  let done = 0, total = 0;
+  list.forEach(n => { const c = dayCounts(n); done += c.done; total += c.total; });
+  return total ? Math.round(done / total * 100) : 0;
+}
+function habitStats() {
+  return CONFIG.checklist.map(it => {
+    const relevant = allNums().filter(n => dayItems(n).some(x => x.id === it.id));
+    return { title: it.title, done: relevant.filter(n => itemOn(n, it.id)).length, total: relevant.length };
+  }).filter(s => s.total);
+}
+
+/* ---------- Рисунки и анимация ---------- */
+function countUp(el, to, ms = 900) {
+  if (!el) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = to; el.dataset.now = to; return; }
+  const from = +el.dataset.now || 0;
+  el.dataset.now = to;
+  const start = performance.now();
+  const step = t => {
+    const k = Math.min((t - start) / ms, 1);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function plateSvg(parts, cls) {
+  const sum = parts.reduce((s, p) => s + p[1], 0);
+  const c = 50, r = 37;
+  let angle = -Math.PI / 2;
+  const slices = parts.map(p => {
+    const a = p[1] / sum * Math.PI * 2;
+    const x1 = c + r * Math.cos(angle), y1 = c + r * Math.sin(angle);
+    angle += a;
+    const x2 = c + r * Math.cos(angle), y2 = c + r * Math.sin(angle);
+    const big = a > Math.PI ? 1 : 0;
+    return `<path d="M${c} ${c}L${x1.toFixed(2)} ${y1.toFixed(2)}A${r} ${r} 0 ${big} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${PART[p[0]][1]}" stroke="#fff" stroke-width="1.6"/>`;
+  }).join("");
+  return `<svg class="${cls}" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="48" fill="#fff" stroke="rgba(46,61,42,.16)" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="41" fill="none" stroke="rgba(46,61,42,.1)" stroke-width="1"/>
+    ${slices}
+  </svg>`;
+}
+function mealPic(n, key, cls, alt = "") {
+  const meal = CONFIG.days[n - 1].meals[key];
+  if (n <= CONFIG.photoDays) return `<img class="${cls}" src="img/d${n}-${key}.webp" alt="${esc(alt)}">`;
+  return plateSvg(meal.parts, cls);
+}
+
+function ringHtml(pct, dark) {
+  const R = 38, len = (2 * Math.PI * R).toFixed(1);
+  return `<div class="ring ${dark ? "on-dark" : ""}" data-pct="${pct}">
+    <svg viewBox="0 0 84 84" aria-hidden="true"><circle class="bg" cx="42" cy="42" r="${R}"/><circle class="val" cx="42" cy="42" r="${R}" stroke-dasharray="${len}" stroke-dashoffset="${len}"/></svg>
+    <b><span class="ring-num">0</span>%</b>
+  </div>`;
+}
+function paintRing(ring, pct, ms) {
+  const val = ring.querySelector(".val");
+  val.style.strokeDashoffset = 2 * Math.PI * 38 * (1 - pct / 100);
+  countUp(ring.querySelector(".ring-num"), pct, ms);
+}
+function startRings(ms = 1000) {
+  setTimeout(() => app.querySelectorAll(".ring[data-pct]").forEach(r => paintRing(r, +r.dataset.pct, ms)), 250);
+}
+
+function segsHtml(current) {
+  return `<div class="segs rise" style="--d:.38s" aria-hidden="true">${allNums().map(n => {
+    const w = isDone(n) ? 100 : n === current ? dayPct(n) : 0;
+    return `<i><b data-seg="${n}" data-w="${w}"></b></i>`;
+  }).join("")}</div>`;
+}
+function startSegs() {
+  setTimeout(() => app.querySelectorAll("[data-seg]").forEach(el => el.style.width = el.dataset.w + "%"), 500);
+}
+
+let io;
+function observe() {
+  if (io) io.disconnect();
+  if (!("IntersectionObserver" in window)) { app.querySelectorAll(".reveal").forEach(el => el.classList.add("in")); return; }
+  io = new IntersectionObserver(items => items.forEach(it => {
+    if (it.isIntersecting) { it.target.classList.add("in"); io.unobserve(it.target); }
+  }), { threshold: .12 });
+  app.querySelectorAll(".reveal").forEach(el => io.observe(el));
+}
+
+function materialHtml(m) {
+  const open = m.fromDay === 0 || isOpen(m.fromDay);
+  if (!open) {
+    return `<div class="mat locked"><div class="mat-head"><span>${esc(m.title)}<small>Откроется вместе с днём ${m.fromDay}</small></span>${ICON.lock}</div></div>`;
+  }
+  return `<div class="mat">
+    <button class="mat-head" data-act="mat"><span>${esc(m.title)}<small>${esc(m.desc)}</small></span><i>+</i></button>
+    <div class="mat-body">${m.html}</div>
+  </div>`;
+}
+
+/* ---------- Экраны ---------- */
+function renderGate() {
+  app.innerHTML = `
+    <form class="gate" id="gate" novalidate>
+      <div class="hero-bg"></div>
+      <img class="gate-face" src="${CONFIG.expertPhoto}" alt="${esc(CONFIG.expertName)}">
+      <div class="hand rise" style="--d:.1s">${esc(CONFIG.expertRole)} ${esc(CONFIG.expertName)}</div>
+      <h1 class="rise" style="--d:.2s">${esc(CONFIG.title)}</h1>
+      <p class="rise" style="--d:.3s">${esc(CONFIG.gateText)}</p>
+      <input class="glass rise" style="--d:.4s" id="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="Введите код доступа" aria-label="Код доступа">
+      <button class="btn lime rise" style="--d:.48s" type="submit">Войти в марафон</button>
+      <div class="err" id="err" role="alert"></div>
+      ${CONFIG.demo ? `<div class="gate-hint rise" style="--d:.56s">Это пробная версия. Код для входа: <b>${esc(CONFIG.accessCodes[0])}</b></div>` : ""}
+    </form>`;
+  setMainButton(null);
+}
+
+function heroKicker() {
+  const now = today(), start = startNum();
+  if (now < start) return "Скоро старт";
+  if (allDone()) return "Марафон пройден";
+  return `День ${Math.min(now - start + 1, CONFIG.openDays || TOTAL)} из ${TOTAL}`;
+}
+
+function progressHtml() {
+  const finished = allNums().filter(isDone);
+  const now = today(), start = startNum();
+  let main, sub;
+  if (now < start) {
+    const left = start - now;
+    main = `Начинаем ${fmtLong(start)}`;
+    sub = `Ещё ${left} ${plural(left, "день", "дня", "дней")}`;
+  } else if (!finished.length) {
+    main = "Первый день впереди";
+    sub = "Здесь появится ваш процент";
+  } else {
+    main = `Завершено дней: ${finished.length} из ${TOTAL}`;
+    sub = "Процент отмеченных пунктов";
+  }
+  return `<div class="progress glass rise" style="--d:.45s">${ringHtml(pctOf(finished), true)}<p><b>${main}</b>${sub}</p></div>`;
+}
+
+function platesRow(n) {
+  return `<div class="now-plates">${Object.keys(MEAL_NAMES).map(k => mealPic(n, k, "")).join("")}</div>`;
+}
+
+function nowCard() {
+  if (allDone()) {
+    return `<button class="now" data-go="#result">
+      <div class="now-kicker">Всё пройдено</div>
+      <h2>Ваш итог марафона</h2>
+      <p>Посмотрите, что получилось и какие привычки прижились.</p>
+      <div class="btn browser-only">Посмотреть итог</div>
+    </button>`;
+  }
+  const n = currentDay();
+  const d = CONFIG.days[n - 1];
+  if (isPreview(n)) {
+    return `<button class="now" data-go="#result">
+      <div class="now-kicker">Пример пройден</div>
+      <h2>Первый день завершён</h2>
+      <p>В настоящем марафоне завтра откроется день ${n}, «${esc(d.title)}». А в конце участница увидит свой итог.</p>
+      <div class="btn browser-only">Посмотреть пример итога</div>
+    </button>`;
+  }
+  if (isOpen(n)) {
+    const behind = !CONFIG.openDays && today() > dayDate(n);
+    return `<button class="now" data-go="#day${n}">
+      <div class="now-kicker">${behind ? "Продолжаем" : "Сегодня"} · день ${n}</div>
+      <h2>${esc(d.title)}</h2>
+      <p>${behind ? "Вы немного отстали от календаря. Завершите этот день, и сразу откроется следующий." : "Подкаст, вода и три тарелки на сегодня. Вечером подведём итог дня."}</p>
+      ${platesRow(n)}
+      <div class="btn browser-only">Открыть день ${n}</div>
+    </button>`;
+  }
+  if (n === 1) {
+    return `<div class="now">
+      <div class="now-kicker">Перед стартом</div>
+      <h2>Первый день откроется ${fmtLong(dayDate(1))}</h2>
+      <p>Пока прочитайте материалы ниже и сходите в магазин по списку.</p>
+    </div>`;
+  }
+  return `<div class="now">
+    <div class="now-kicker">На сегодня всё</div>
+    <h2>День ${n - 1} завершён</h2>
+    <p>Следующий день, «${esc(d.title)}», откроется ${fmtLong(dayDate(n))}.</p>
+  </div>`;
+}
+
+function tileHtml(n) {
+  const date = dayDate(n);
+  const state = isDone(n) ? "done" : isOpen(n) ? "open" : "locked";
+  const mark = state === "done" ? ICON.tick : state === "open" ? '<span class="dot"></span>' : ICON.lock;
+  const label = `День ${n}, ${fmtLong(date)}: ${state === "done" ? "завершён" : state === "open" ? "открыт" : "закрыт"}`;
+  return `<button class="tile ${state}" data-day="${n}" aria-label="${esc(label)}">
+    <small>${fmt(date, { weekday: "short" })}</small>
+    <b>${fmt(date, { day: "numeric" })}</b>
+    ${mark}
+  </button>`;
+}
+
+function renderHome() {
+  const n = currentDay();
+  app.innerHTML = `
+    <header class="hero hero-home">
+      <div class="hero-bg"></div>
+      <div class="hero-text">
+        <div class="kicker rise" style="--d:.1s">${esc(heroKicker())}</div>
+        <h1 class="rise" style="--d:.2s">${esc(CONFIG.title)}</h1>
+        <div class="expert rise" style="--d:.32s">
+          <img src="${CONFIG.expertPhoto}" alt="">
+          <div><small>${esc(CONFIG.expertRole)}</small><div class="hand">${esc(CONFIG.expertName)}</div></div>
+        </div>
+        ${segsHtml(n)}
+      </div>
+      ${progressHtml()}
+    </header>
+    <main class="sheet">
+      <div class="rise" style="--d:.55s">${nowCard()}</div>
+      <section class="sec reveal">
+        <h2>Календарь</h2>
+        <span class="hand">день за днём</span>
+        <div class="cal">${allNums().map(tileHtml).join("")}</div>
+      </section>
+      <section class="sec reveal">
+        <h2>Материалы</h2>
+        <span class="hand">открываются постепенно</span>
+        <div class="mats">${CONFIG.materials.map(materialHtml).join("")}</div>
+      </section>
+      ${CONFIG.demo ? `
+      <div class="demo reveal">
+        <b>Пробная версия</b>
+        ${CONFIG.openDays ? `
+        В этом примере открыт первый день, он показывает, как всё устроено. В настоящем марафоне дни открываются по календарю, а в конце участница видит свой итог.
+        <div class="demo-row"><button data-go="#result">Посмотреть пример итога</button></div>` : `
+        В настоящем марафоне дни открываются по календарю. Здесь можно перемотать время и пройти всё за пару минут.
+        <div class="demo-row">
+          <button data-act="off" data-v="-1">← Вчера</button>
+          <button data-act="off" data-v="1">Завтра →</button>
+        </div>`}
+        <button class="link" data-act="reset">Начать заново</button>
+      </div>` : ""}
+      <button class="btn ghost contact" data-act="curator">${esc(CONFIG.curatorLabel)}</button>
+      <div class="note">${esc(CONFIG.footnote)}</div>
+    </main>`;
+  if (allDone()) setMainButton("Посмотреть итог", () => go("#result"));
+  else if (isPreview(n)) setMainButton("Посмотреть пример итога", () => go("#result"));
+  else if (isOpen(n)) setMainButton("Открыть день " + n, () => go("#day" + n));
+  else setMainButton(null);
+  startRings();
+  startSegs();
+  observe();
+}
+
+function glassSvg(i) {
+  const shape = "M4 3h16l-2.2 23.4a1.6 1.6 0 0 1-1.6 1.4H7.8a1.6 1.6 0 0 1-1.6-1.4z";
+  return `<svg viewBox="0 0 24 30" aria-hidden="true">
+    <defs><clipPath id="g${i}"><path d="${shape}"/></clipPath></defs>
+    <path class="outline" d="${shape}"/>
+    <g clip-path="url(#g${i})"><path class="w" fill="#A9DDE8" d="M0 8q3-2 6 0t6 0 6 0 6 0V30H0z"/></g>
+  </svg>`;
+}
+
+function renderDay(n) {
+  const d = CONFIG.days[n - 1];
+  const mats = CONFIG.materials.filter(m => m.fromDay === n);
+  app.innerHTML = `
+    <header class="hero hero-day">
+      <div class="hero-bg"></div>
+      <button class="round browser-only" data-go="#" aria-label="Все дни">‹</button>
+      <div class="hero-text">
+        <div class="kicker rise" style="--d:.1s">День ${n} из ${TOTAL} · ${fmtLong(dayDate(n))}</div>
+        <h1 class="rise" style="--d:.2s">${esc(d.title)}</h1>
+        <div class="hand rise" style="--d:.32s">${esc(d.hand)}</div>
+        ${segsHtml(n)}
+      </div>
+      ${d.audio ? `
+      <div class="player glass rise" id="player" style="--d:.45s">
+        <button class="play" data-act="play" aria-label="Слушать подкаст">${ICON.play}</button>
+        <div class="player-main">
+          <div class="player-top"><b>Подкаст дня</b><div class="bars" aria-hidden="true">${[.4, .8, .5, 1, .6, .9, .35, .7].map((h, i) => `<i style="--h:${h};--i:${i}"></i>`).join("")}</div></div>
+          <input class="seek" id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Перемотка">
+          <div class="player-meta"><span id="time">Нажмите, чтобы послушать</span><button class="speed" data-act="speed">1×</button></div>
+        </div>
+      </div>
+      <div class="audio-err" id="audio-err" hidden>Аудио не загрузилось. Проверьте интернет и попробуйте ещё раз.</div>` : ""}
+    </header>
+
+    <main class="sheet">
+      <p class="lead rise" style="--d:.55s">${esc(d.tip)}</p>
+
+      <section class="sec reveal">
+        <h2>Рацион на день</h2>
+        <span class="hand">внутри рецепт и состав</span>
+        <div class="meals">
+          ${Object.keys(MEAL_NAMES).map(k => {
+            const m = d.meals[k];
+            return `<button class="meal reveal" data-go="#day${n}/${k}">
+              <div class="meal-when">${MEAL_NAMES[k]}</div>
+              <h3>${esc(m.short)}</h3>
+              <div class="meal-meta">${m.kcal} ккал · ${esc(m.time)}</div>
+              <span class="meal-go">Рецепт и состав</span>
+              ${mealPic(n, k, "meal-pic")}
+            </button>`;
+          }).join("")}
+        </div>
+      </section>
+
+      <section class="water reveal">
+        <div class="water-head">
+          <h2>Вода<br>на сегодня</h2>
+          <div class="water-num"><span id="wnum">0</span><small> / ${CONFIG.waterGoal}</small></div>
+        </div>
+        <div class="glasses">
+          ${Array.from({ length: CONFIG.waterGoal }, (_, i) => `<button class="glass-btn" data-act="glass" data-v="${i + 1}" aria-label="Стакан ${i + 1}">${glassSvg(i)}</button>`).join("")}
+        </div>
+        <p>${esc(CONFIG.waterNote)}</p>
+      </section>
+
+      <section class="sec reveal">
+        <h2>Витамины</h2>
+        <span class="hand">отметьте, когда приняли</span>
+        <div class="sups">
+          ${CONFIG.supplements.map(s => `<button class="sup" data-act="sup" data-id="${s.id}">
+            <img src="${s.img}" alt="">
+            <h3>${esc(s.title)}</h3>
+            <small>${esc(s.when)}</small>
+            <span class="sup-mark"><span class="tick">${ICON.tick}</span>Принято</span>
+          </button>`).join("")}
+        </div>
+        <p class="sup-note">${esc(CONFIG.supNote)}</p>
+      </section>
+
+      ${mats.length ? `<section class="sec reveal"><h2>Материал дня</h2><div class="mats">${mats.map(materialHtml).join("")}</div></section>` : ""}
+
+      <section class="sec reveal" id="summary">
+        <h2>Итог дня</h2>
+        <span class="hand">отметьте, что получилось</span>
+        <div class="summary">
+          ${ringHtml(0)}
+          <p>Следующий день откроется, даже если отмечено не всё, поэтому можно быть честными.</p>
+        </div>
+        <div class="checks">
+          ${dayItems(n).map(it => `<button class="check" role="checkbox" data-act="check" data-id="${it.id}"><span class="tick">${ICON.tick}</span>${esc(it.id === "water" ? `${it.title}, ${CONFIG.waterGoal} стаканов` : it.title)}</button>`).join("")}
+        </div>
+        ${isDone(n) ? `<div class="finish-note">День завершён. Отметки можно поправить, процент пересчитается сам.</div>` : `<button class="btn finish" data-act="finish">Завершить день</button>`}
+      </section>
+      <div class="note">${esc(CONFIG.footnote)}</div>
+    </main>`;
+  paintDay(n);
+  setupAudio(n);
+  setMainButton(null);
+  startSegs();
+  observe();
+}
+
+// Обновляем галочки на месте, чтобы не сбивать прокрутку и не останавливать подкаст
+function paintDay(n) {
+  const w = (days[n] && days[n].w) || 0;
+  app.querySelectorAll(".glass-btn").forEach(el => el.classList.toggle("full", +el.dataset.v <= w));
+  countUp(app.querySelector("#wnum"), w, 400);
+  app.querySelectorAll(".sup").forEach(el => el.classList.toggle("on", !!days[n] && (days[n].c || []).includes("sup_" + el.dataset.id)));
+  app.querySelectorAll(".check").forEach(el => {
+    const on = itemOn(n, el.dataset.id);
+    el.classList.toggle("on", on);
+    el.setAttribute("aria-checked", on);
+  });
+  const pct = dayPct(n);
+  paintRing(app.querySelector(".summary .ring"), pct);
+  const seg = app.querySelector(`[data-seg="${n}"]`);
+  if (seg) { seg.dataset.w = isDone(n) ? 100 : pct; seg.style.width = seg.dataset.w + "%"; }
+}
+
+function renderDish(n, key) {
+  const m = CONFIG.days[n - 1].meals[key];
+  app.innerHTML = `
+    <div class="dish-top">
+      <button class="round browser-only" data-go="#day${n}" aria-label="Назад">‹</button>
+      ${mealPic(n, key, "dish-img", m.dish)}
+    </div>
+    <main class="dish-sheet">
+      <div class="meal-when rise" style="--d:.2s">${MEAL_NAMES[key]} · день ${n}</div>
+      <div class="dish-head rise" style="--d:.25s">
+        <h1>${esc(m.dish)}</h1>
+        <span class="time">${esc(m.time)}</span>
+      </div>
+      <p class="dish-text rise" style="--d:.32s">${esc(m.text)}</p>
+      <div class="nutri rise" style="--d:.4s">
+        <div><b data-count="${m.kcal}">0</b><small>ккал</small></div>
+        <div><b data-count="${m.p}">0</b><small>белки, г</small></div>
+        <div><b data-count="${m.f}">0</b><small>жиры, г</small></div>
+        <div><b data-count="${m.c}">0</b><small>углев., г</small></div>
+      </div>
+      <div class="parts rise" style="--d:.5s">
+        <div class="parts-title">Как собрана тарелка</div>
+        <div class="bar">${m.parts.map(p => `<i data-w="${p[1]}" style="background:${PART[p[0]][1]}"></i>`).join("")}</div>
+        <div class="legend">${m.parts.map(p => `<div><i style="background:${PART[p[0]][1]}"></i><span>${PART[p[0]][0]}: ${esc(p[2])}</span><b>${p[1]}%</b></div>`).join("")}</div>
+      </div>
+      <div class="tabs rise" id="tabs" style="--d:.58s">
+        <button class="tab" data-act="tab" data-v="0">Ингредиенты</button>
+        <button class="tab" data-act="tab" data-v="1">Рецепт</button>
+      </div>
+      <div id="tabbody" class="rise" style="--d:.64s"></div>
+      <div class="note">${esc(CONFIG.footnote)}</div>
+    </main>`;
+  renderTab(n, key, 0);
+  app.querySelectorAll("[data-count]").forEach(el => setTimeout(() => countUp(el, +el.dataset.count, 1100), 450));
+  setTimeout(() => app.querySelectorAll(".bar i").forEach(el => el.style.width = el.dataset.w + "%"), 650);
+  setMainButton(null);
+}
+
+function renderTab(n, key, tab) {
+  const m = CONFIG.days[n - 1].meals[key];
+  app.querySelector("#tabs").classList.toggle("second", tab === 1);
+  const have = (days[n] && days[n].h && days[n].h[key]) || [];
+  app.querySelector("#tabbody").innerHTML = tab === 0 ? `
+    <div class="list-head"><span>Что понадобится</span><small id="tobuy"></small></div>
+    ${m.ingr.map((g, i) => `<button class="ingr ${have.includes(i) ? "on" : ""}" data-act="ingr" data-v="${i}">
+      <span class="tick">${ICON.tick}</span>
+      <span class="ingr-main">${esc(g[0])}<small>${esc(g[1])}</small></span>
+      <span class="have">Уже есть</span>
+    </button>`).join("")}` : `
+    <div class="list-head"><span>Шаг за шагом</span><small>1 порция</small></div>
+    ${m.steps.map((s, i) => `<div class="step" style="--i:${i}"><b>${i + 1}</b><span>${esc(s)}</span></div>`).join("")}`;
+  if (tab === 0) paintBuy(n, key);
+}
+
+function paintBuy(n, key) {
+  const m = CONFIG.days[n - 1].meals[key];
+  const have = (days[n] && days[n].h && days[n].h[key]) || [];
+  const left = m.ingr.length - have.length;
+  app.querySelector("#tobuy").textContent = left ? "Докупить: " + left : "Всё есть";
+}
+
+function renderResult() {
+  const nums = allNums();
+  const sample = CONFIG.openDays ? CONFIG.sampleResult : null;
+  const stats = sample ? CONFIG.checklist.map((it, i) => ({ title: it.title, done: sample.stats[i], total: TOTAL })) : habitStats();
+  const pct = sample ? Math.round(stats.reduce((s, x) => s + x.done, 0) / (stats.length * TOTAL) * 100) : pctOf(nums);
+  const dayValue = n => sample ? sample.days[n - 1] : dayPct(n);
+  const band = CONFIG.bands.find(b => pct >= b.from);
+  const ratio = s => s.done / s.total;
+  const best = stats.reduce((a, b) => ratio(b) > ratio(a) ? b : a);
+  const worst = stats.reduce((a, b) => ratio(b) < ratio(a) ? b : a);
+  app.innerHTML = `
+    <header class="hero res-hero">
+      <div class="hero-bg"></div>
+      <button class="round browser-only" data-go="#" aria-label="Назад">‹</button>
+      <div class="kicker rise">${sample ? "Пример итога" : "Итог марафона"}</div>
+      <div class="rise" style="--d:.1s">${ringHtml(pct, true)}</div>
+      <h1 class="rise" style="--d:.3s">${esc(band.title)}</h1>
+      <div class="hand rise" style="--d:.4s">${esc(band.hand)}</div>
+      <p class="rise" style="--d:.5s">Вы выполнили ${pct}% рекомендаций. ${esc(band.text)}</p>
+      ${sample ? `<p class="rise" style="--d:.6s"><b>Это пример экрана, цифры для показа.</b> Так итог выглядит в конце настоящего марафона.</p>` : ""}
+    </header>
+    <main class="sheet">
+      ${ratio(best) > ratio(worst) ? `
+      <div class="ups rise" style="--d:.6s">
+        <div class="up">Легче всего, ${best.done} из ${best.total}<b>${esc(best.title)}</b></div>
+        <div class="up">Есть запас, ${worst.done} из ${worst.total}<b>${esc(worst.title)}</b></div>
+      </div>` : ""}
+      <section class="sec rise" style="--d:.7s">
+        <h2>По привычкам</h2>
+        ${stats.map(s => `<div class="stat">
+          <div class="stat-row"><span>${esc(s.title)}</span><span>${s.done} из ${s.total}</span></div>
+          <div class="track"><i data-w="${Math.round(ratio(s) * 100)}"></i></div>
+        </div>`).join("")}
+      </section>
+      <section class="sec reveal">
+        <h2>По дням</h2>
+        <div class="days">${nums.map(n => `<div><i data-h="${dayValue(n)}"></i>${n}</div>`).join("")}</div>
+      </section>
+      <div class="res-btns">
+        ${sample ? `<button class="btn" data-go="#">Вернуться к календарю</button>` : `
+        <button class="btn" data-act="send">Отправить итог куратору</button>
+        ${CONFIG.demo ? `<button class="btn ghost" data-act="reset">Пройти заново</button>` : ""}`}
+      </div>
+      <div class="note">${esc(CONFIG.footnote)}</div>
+    </main>`;
+  setMainButton(null);
+  observe();
+  startRings(1600);
+  setTimeout(() => app.querySelectorAll(".track i").forEach(el => el.style.width = el.dataset.w + "%"), 350);
+  setTimeout(() => app.querySelectorAll(".days i").forEach(el => el.style.height = `calc((100% - 22px) * ${Math.max(+el.dataset.h, 4) / 100})`), 800);
+}
+
+function resultMessage() {
+  const lines = habitStats().map(s => `${s.title}: ${s.done} из ${s.total}`);
+  return `Мой итог марафона «${CONFIG.title}»: ${pctOf(allNums())}%\n${lines.join("\n")}`;
+}
+
+function closeOverlays() {
+  document.querySelectorAll(".over").forEach(el => el.remove());
+}
+
+function showFinishSheet(n) {
+  const pct = dayPct(n);
+  const last = n === TOTAL;
+  const next = CONFIG.days[n];
+  const preview = isPreview(n + 1);
+  const nextText = last ? "Это был последний день. Посмотрите, что получилось за весь марафон."
+    : preview ? `В настоящем марафоне завтра откроется день ${n + 1}, «${next.title}». А пока можно посмотреть, как выглядит итог.`
+    : dateReached(n + 1) ? `Уже открыт день ${n + 1}, «${next.title}».`
+    : `День ${n + 1}, «${next.title}», откроется ${fmtLong(dayDate(n + 1))}.`;
+  const title = pct >= 80 ? "Отличный день" : pct >= 50 ? "Хороший день" : "День закрыт, продолжаем";
+  const colors = ["#C9DC6B", "#7DA45F", "#E4EBBD", "#E2B84F"];
+  const leaves = (pct >= 50 || last) ? Array.from({ length: 26 }, () => `<i class="leaf" style="left:${Math.random() * 100}%;background:${colors[Math.floor(Math.random() * 4)]};--t:${2 + Math.random() * 1.6}s;--d:${Math.random() * .6}s;--x:${(Math.random() - .5) * 120}px;--r:${(Math.random() - .5) * 900}deg"></i>`).join("") : "";
+  const wrap = document.createElement("div");
+  wrap.className = "over";
+  wrap.innerHTML = `${leaves}<div class="done" role="dialog" aria-modal="true">
+    <div class="done-num"><span id="dpct">0</span>%</div>
+    <h2>${esc(title)}</h2>
+    <p>${esc(nextText)}</p>
+    <button class="btn lime" data-go="${last || preview ? "#result" : "#"}">${preview ? "Посмотреть пример итога" : last ? "Посмотреть итог" : "К календарю"}</button>
+    ${preview ? `<button class="link" data-go="#">К календарю</button>` : ""}
+  </div>`;
+  document.body.appendChild(wrap);
+  setTimeout(() => countUp(wrap.querySelector("#dpct"), pct, 1200), 200);
+  wrap.addEventListener("click", e => {
+    const b = e.target.closest("[data-go]");
+    if (b) { wrap.remove(); go(b.dataset.go); }
+  });
+  setMainButton(null);
+}
+
+function showNotice(text) {
+  closeOverlays();
+  const wrap = document.createElement("div");
+  wrap.className = "over";
+  wrap.innerHTML = `<div class="done" role="dialog" aria-modal="true"><h2 style="margin:0 0 16px">${esc(text)}</h2><button class="btn lime">Понятно</button></div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener("click", e => { if (e.target === wrap || e.target.closest("button")) wrap.remove(); });
+}
+
+/* ---------- Подкаст ---------- */
+function clock(sec) {
+  if (!isFinite(sec)) return "0:00";
+  return Math.floor(sec / 60) + ":" + String(Math.floor(sec % 60)).padStart(2, "0");
+}
+function stopAudio() {
+  aud.pause();
+  aud.onplay = aud.onpause = aud.ontimeupdate = aud.onended = aud.onerror = aud.onloadedmetadata = null;
+  aud.removeAttribute("src");
+  aud.load();
+}
+function setupAudio(n) {
+  const src = CONFIG.days[n - 1].audio;
+  if (!src) return;
+  const player = app.querySelector("#player");
+  const btn = app.querySelector(".play");
+  const seek = app.querySelector("#seek");
+  const time = app.querySelector("#time");
+  const err = app.querySelector("#audio-err");
+  const paint = () => {
+    if (aud.duration) {
+      seek.value = aud.currentTime / aud.duration * 100;
+      time.textContent = clock(aud.currentTime) + " / " + clock(aud.duration);
+    }
+  };
+  aud.src = src;
+  aud.preload = "metadata";
+  aud.playbackRate = 1;
+  aud.onloadedmetadata = paint;
+  aud.ontimeupdate = paint;
+  aud.onplay = () => { btn.innerHTML = ICON.pause; player.classList.add("playing"); err.hidden = true; };
+  aud.onpause = () => { btn.innerHTML = ICON.play; player.classList.remove("playing"); };
+  aud.onerror = () => { err.hidden = false; };
+  aud.onended = () => {
+    aud.currentTime = 0;
+    if (!itemOn(n, "audio")) { toggle(n, "audio"); saveDay(n); paintDay(n); }
+  };
+  seek.oninput = () => { if (aud.duration) aud.currentTime = seek.value / 100 * aud.duration; };
+}
+
+/* ---------- Переходы и кнопки Telegram ---------- */
+let mainAction = null;
+function setMainButton(text, action) {
+  mainAction = action || null;
+  if (!inTelegram) return;
+  if (text) { tg.MainButton.setText(text); tg.MainButton.show(); }
+  else tg.MainButton.hide();
+}
+
+function go(hash) {
+  haptic();
+  if (location.hash === hash || (hash === "#" && !location.hash)) route();
+  else location.hash = hash;
+}
+
+// Адреса: #day3 — день, #day3/lunch — блюдо, #result — итог
+function parseHash() {
+  const m = location.hash.match(/^#day(\d+)(?:\/(\w+))?$/);
+  if (!m) return { n: 0, key: "" };
+  return { n: +m[1], key: m[2] || "" };
+}
+function parentHash() {
+  const { n, key } = parseHash();
+  return key ? "#day" + n : "#";
+}
+
+function route() {
+  stopAudio();
+  closeOverlays();
+  if (!meta.in) { renderGate(); return; }
+  const { n, key } = parseHash();
+  const dayOk = n >= 1 && n <= TOTAL && isOpen(n);
+  const dishOk = dayOk && !!MEAL_NAMES[key];
+  const resultOk = location.hash === "#result" && (allDone() || !!CONFIG.openDays);
+  if (dishOk) renderDish(n, key);
+  else if (dayOk && !key) renderDay(n);
+  else if (resultOk) renderResult();
+  else renderHome();
+  if (inTelegram) { if (dishOk || (dayOk && !key) || resultOk) tg.BackButton.show(); else tg.BackButton.hide(); }
+  scrollTo(0, 0);
+}
+
+function bindEvents() {
+  app.addEventListener("submit", e => {
+    e.preventDefault();
+    const value = app.querySelector("#code").value.trim().toUpperCase();
+    if (!CONFIG.accessCodes.some(c => String(c).toUpperCase() === value)) {
+      haptic("medium");
+      app.querySelector("#err").textContent = value ? "Такого кода нет. Проверьте его в чате участниц." : "Введите код доступа";
+      return;
+    }
+    meta.in = true;
+    if (CONFIG.startDate === "auto" && meta.start == null) meta.start = realToday();
+    saveMeta();
+    route();
+  });
+
+  app.addEventListener("click", e => {
+    const goEl = e.target.closest("[data-go]");
+    if (goEl) { go(goEl.dataset.go); return; }
+
+    const tile = e.target.closest("[data-day]");
+    if (tile) {
+      const n = +tile.dataset.day;
+      if (isOpen(n)) go("#day" + n);
+      else { haptic(); showNotice(lockReason(n)); }
+      return;
+    }
+
+    const el = e.target.closest("[data-act]");
+    if (!el) return;
+    const { n, key } = parseHash();
+    switch (el.dataset.act) {
+      case "mat":
+        haptic();
+        el.closest(".mat").classList.toggle("open");
+        break;
+      case "glass": {
+        haptic();
+        const v = +el.dataset.v;
+        // Нажатие на последний полный стакан убирает его: на случай, если нажали случайно
+        day(n).w = day(n).w === v ? v - 1 : v;
+        saveDay(n);
+        paintDay(n);
+        break;
+      }
+      case "sup":
+        haptic();
+        toggle(n, "sup_" + el.dataset.id);
+        saveDay(n);
+        paintDay(n);
+        break;
+      case "check": {
+        haptic();
+        const id = el.dataset.id;
+        const d = day(n);
+        if (id === "water") d.w = itemOn(n, "water") ? 0 : CONFIG.waterGoal;
+        else if (id === "sup") {
+          const on = !itemOn(n, "sup");
+          d.c = d.c.filter(x => !x.startsWith("sup_"));
+          if (on) CONFIG.supplements.forEach(s => d.c.push("sup_" + s.id));
+        }
+        else toggle(n, id);
+        saveDay(n);
+        paintDay(n);
+        break;
+      }
+      case "finish":
+        haptic("medium");
+        day(n).f = 1;
+        saveDay(n);
+        el.outerHTML = `<div class="finish-note">День завершён. Отметки можно поправить, процент пересчитается сам.</div>`;
+        showFinishSheet(n);
+        break;
+      case "tab":
+        haptic();
+        renderTab(n, key, +el.dataset.v);
+        break;
+      case "ingr": {
+        haptic();
+        const d = day(n);
+        d.h = d.h || {};
+        const have = d.h[key] || [];
+        const i = +el.dataset.v;
+        d.h[key] = have.includes(i) ? have.filter(x => x !== i) : [...have, i];
+        saveDay(n);
+        el.classList.toggle("on", d.h[key].includes(i));
+        paintBuy(n, key);
+        break;
+      }
+      case "play":
+        if (aud.paused) aud.play().catch(() => { app.querySelector("#audio-err").hidden = false; });
+        else aud.pause();
+        break;
+      case "speed": {
+        const next = aud.playbackRate === 1 ? 1.5 : aud.playbackRate === 1.5 ? 2 : 1;
+        aud.playbackRate = next;
+        el.textContent = String(next).replace(".", ",") + "×";
+        break;
+      }
+      case "off":
+        haptic();
+        meta.off = (meta.off || 0) + +el.dataset.v;
+        saveMeta();
+        route();
+        break;
+      case "reset":
+        clearState();
+        meta = { in: true, start: realToday(), off: 0 };
+        saveMeta();
+        go("#");
+        break;
+      case "curator":
+        openUrl(CONFIG.curatorUrl);
+        break;
+      case "send":
+        openUrl(CONFIG.curatorUrl + "?text=" + encodeURIComponent(resultMessage()));
+        break;
+    }
+  });
+
+  addEventListener("hashchange", route);
+}
+
+function initTelegram() {
+  if (!inTelegram) return;
+  document.body.classList.add("in-tg");
+  tg.ready();
+  tg.expand();
+  const css = getComputedStyle(document.documentElement);
+  tg.setHeaderColor(css.getPropertyValue("--deep").trim());
+  tg.setBackgroundColor(css.getPropertyValue("--bg").trim());
+  tg.MainButton.setParams({ color: css.getPropertyValue("--main-btn").trim(), text_color: "#FFFFFF" });
+  tg.MainButton.onClick(() => { if (mainAction) mainAction(); });
+  tg.BackButton.onClick(() => go(parentHash()));
+}
+
+initTelegram();
+bindEvents();
+loadState().then(route);
+</script>
+</body>
+</html>
