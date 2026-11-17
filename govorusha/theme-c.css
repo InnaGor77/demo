@@ -1,0 +1,84 @@
+/* В · Яркий попугай: большие плоскости бирюзового и жёлтого, круглый жирный Unbounded, крупный попугай. */
+:root{
+  --bg:#FFF8E8; --bg2:#FFEDB8; --card:#FFFFFF; --ink:#0E2A2B; --soft:#3F5B5C; --brand:#0A7F7A; --brand-ink:#fff; --accent:#FFD23F;
+  --pink:#FF8FB1; --line:rgba(14,42,43,.14); --radius:36px; --radius-s:24px;
+  --f-head:'Unbounded',system-ui,sans-serif; --f-body:'Golos Text',system-ui,sans-serif; --head-w:800; --head-track:-.03em;
+}
+h1{font-size:clamp(34px,4.6vw,62px);line-height:1.04}
+h2{font-size:clamp(28px,3.8vw,50px)}
+.hero{max-width:none;margin:0;background:var(--brand);color:#fff;border-radius:0 0 60px 60px;padding-bottom:clamp(48px,7vw,96px);
+  padding-left:max(var(--pad),calc((100vw - var(--max))/2));padding-right:max(var(--pad),calc((100vw - var(--max))/2))}
+.hero .eyebrow{color:#fff}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead,.hero .facts span{color:rgba(255,255,255,.94)}
+.hero .btn-main{background:var(--accent);color:var(--ink)}
+.hero .btn-ghost{color:#fff;border-color:rgba(255,255,255,.6)}
+.top{background:var(--brand);color:#fff}
+.top .logo-text small{color:rgba(255,255,255,.75)}
+.top .btn-small{background:var(--accent);color:var(--ink)}
+.logo-mark{background:#fff}
+.hero-art{min-height:560px}
+.hero-photo{inset:30px 0 auto 38%;height:260px;border-radius:50%;border:8px solid var(--accent);aspect-ratio:1;width:auto}
+.hero-photo img{object-position:50% 50%}
+.hero-parrot{width:min(400px,78%);left:0;bottom:-20px}
+.hero-art::before{content:"";position:absolute;left:4%;bottom:0;width:72%;aspect-ratio:1;border-radius:50%;background:var(--accent);opacity:.95}
+.hero-art::after{content:"";position:absolute;right:6%;bottom:40px;width:90px;height:90px;border-radius:50%;background:var(--pink)}
+.sticker{background:#fff;color:var(--ink);font-family:var(--f-head);font-weight:700;font-size:13px;right:auto;left:62%;bottom:auto;top:310px;transform:rotate(6deg)}
+.btn{font-family:var(--f-head);font-weight:700;font-size:15px}
+.pick-box{background:var(--accent);border-radius:44px}
+.pick-tabs{background:rgba(255,255,255,.6)}
+.pick-tab{font-family:var(--f-head);font-weight:700;font-size:14px}
+.pick-tab.on{background:var(--ink);color:#fff}
+input[type=range]{background:linear-gradient(90deg,var(--ink) var(--fill,40%),rgba(255,255,255,.7) var(--fill,40%));height:16px}
+input[type=range]::-webkit-slider-thumb{background:var(--pink);width:42px;height:42px;border-color:#fff}
+.age-label output{color:var(--ink)}
+.age-scale{color:var(--ink)}
+.prog{background:#fff}
+.prog-tag{background:var(--brand);color:#fff}
+.prog:nth-child(4n+2) .prog-tag{background:var(--pink);color:var(--ink)}
+.prog:nth-child(4n+3) .prog-tag{background:var(--ink)}
+.chip{border:0;background:rgba(255,255,255,.75)}
+.chip.on{background:var(--ink);color:#fff}
+.answer{background:#fff}
+.ans-who span{background:var(--brand);color:#fff;font-size:18px}
+.kid{background:var(--brand);color:#fff}
+.kid:nth-child(2){background:var(--pink);color:var(--ink)}
+.kid-res{color:var(--accent)}
+.kid:nth-child(2) .kid-res{color:var(--ink)}
+.kid-face{background:#fff;color:var(--ink)}
+.steps li{border-top:4px solid var(--ink)}
+.price-list:first-child{background:var(--ink);color:#fff}
+.price-list:first-child dt,.price-list:first-child dd{border-color:rgba(255,255,255,.2)}
+.price-list:first-child .accent{color:var(--accent)}
+.day{background:#fff}
+.day:nth-child(odd) h4{color:var(--pink)}
+.day h4{font-size:22px}
+blockquote{background:var(--accent)}
+blockquote:nth-child(2){background:#fff}
+blockquote:nth-child(3){background:var(--pink)}
+blockquote cite{color:var(--ink)}
+.find{background:var(--brand);color:#fff;border-radius:60px;max-width:var(--max);margin-bottom:40px}
+.find .eyebrow{color:#fff}
+.find .soft{color:rgba(255,255,255,.94)}
+.find .btn-main{background:var(--accent);color:var(--ink)}
+.find .btn-ghost{color:#fff}
+.find-photo{border-radius:50%;border:8px solid var(--accent)}
+.buddy{width:110px}
+@media (max-width:720px){
+  .hero{border-radius:0 0 36px 36px}
+  .hero-art{min-height:320px}
+  .hero-photo{height:150px;left:56%;top:6px}
+  .hero-parrot{width:62%;bottom:-6px}
+  .hero-art::after{width:56px;height:56px;bottom:20px}
+  .sticker{display:none}
+  .top .btn-small{font-size:12px;padding:0 12px}
+  .logo-text b{font-size:19px}
+  .find{border-radius:36px;margin:0 12px 24px}
+}
+.ev-poster{background:var(--accent);color:var(--ink)}
+.ev:nth-child(3n+2) .ev-poster{background:var(--pink);color:var(--ink)}
+.ev:nth-child(3n+3) .ev-poster{background:var(--brand);color:#fff}
+.ev-poster:not(.has-img){background-image:radial-gradient(circle at 82% 70%,rgba(255,255,255,.35) 0 34px,transparent 35px),radial-gradient(circle at 64% 28%,rgba(255,255,255,.25) 0 12px,transparent 13px)}
+.ev-until{background:var(--ink);color:#fff}
+.ev-body h3{font-size:19px}
+.ev-meta li{background:var(--bg)}
