@@ -121,7 +121,7 @@
          hello: 'Привет! Полетели?',
          parrot: { body:'#16BDB5', belly:'#FFE27A', wing:'#0B8C87', beak:'#FF7A45', beakDark:'#E2582A', face:'#FFFFFF', cheek:'#FF8FB1', ink:'#0E2A2B' } }
   };
-  const v = (new URLSearchParams(location.search).get('v') || 'a').toLowerCase();
+  const v = 'c';
   const T = THEMES[v] || THEMES.a;
   window.GOV_THEME = T;
   document.documentElement.dataset.v = v in THEMES ? v : 'a';
@@ -131,10 +131,6 @@
 </head>
 <body>
 
-<nav class="switch" aria-label="Варианты дизайна">
-  <a href="?v=a" data-k="a">А · Спокойная забота</a>
-  <a href="?v=c" data-k="c">Б · Яркий попугай</a>
-</nav>
 
 <header class="top">
   <a class="logo" href="#">
