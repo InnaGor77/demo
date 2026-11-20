@@ -1,0 +1,1597 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Миндаль · запись на маникюр</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="fonts" rel="stylesheet" href="">
+<style>
+  /* Стили (цвета и шрифты). Какой включён, решает CONFIG.look, для сравнения можно открыть ?look=a */
+  :root {
+    /* 0 — «Пудра», первый вариант */
+    --bg: #F7F0EB;                     /* фон страницы */
+    --card: #FFFBF8;                   /* карточки */
+    --soft: #F1DDD7;                   /* мягкие блоки, ею же красится шапка Telegram */
+    --mark: #B9736F;                   /* фирменная миндалинка и точки */
+    --ink: #6B1E34;                    /* заголовки и кнопка */
+    --accent: #94414F;                 /* вторая строка заголовка */
+    --gold: #E2BE98;                   /* заявка ждёт ответа */
+    --text: #2B1A1E;
+    --muted: #65504F;
+    --line: rgba(107, 30, 52, .16);
+    --taken: #E7E0DC;                  /* занятое окошко */
+    --taken-text: #A99D9A;
+    --on-ink: #FFF8F4;                 /* текст на кнопке */
+    --title: "Playfair Display", Georgia, serif;
+    --title-weight: 400;
+    --t: 1;                            /* масштаб заголовков: широкий шрифт делаем мельче */
+    --script: "Playfair Display", Georgia, serif;
+    --script-style: italic;
+    --script-weight: 400;
+    --body: "Manrope", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --body-weight: 500;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  /* A — «Синяя глазурь»: цвет 2027 года по WGSN, к нему розовый цветущего миндаля */
+  :root[data-look="a"] {
+    --bg: #F3F5F9; --card: #FFFFFF; --soft: #DDE5F6; --mark: #C9A96E; --ink: #1D2C74; --accent: #3A5FD8;
+    --gold: #F3D58A; --text: #151A2D; --muted: #535C77; --line: rgba(29, 44, 116, .14);
+    --taken: #E6E8EE; --taken-text: #98A0B3; --on-ink: #FFFFFF;
+    --title: "Tenor Sans", Arial, sans-serif; --t: .86;
+    --script: "Ysabeau Office", Georgia, serif; --script-style: italic; --script-weight: 400;
+    --body: "Onest", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
+  }
+  /* B — «Баклажан и шартрез»: густой баклажан, сиреневая бумага, капля зелёно-жёлтого */
+  :root[data-look="b"] {
+    --bg: #F2EFF3; --card: #FFFFFF; --soft: #E6DDEA; --mark: #AEB82E; --ink: #3B1C45; --accent: #7A4A8A;
+    --gold: #DDE48C; --text: #20142A; --muted: #62556A; --line: rgba(59, 28, 69, .14);
+    --taken: #E7E3E9; --taken-text: #A29AA7; --on-ink: #FFFFFF;
+    --title: "Noto Serif Display", Georgia, serif; --title-weight: 300; --t: 1.04;
+    --script: "Noto Serif Display", Georgia, serif; --script-style: italic; --script-weight: 300;
+    --body: "Commissioner", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
+  }
+  /* C — «Глина и апельсин»: белый, тёплая глина и яркий оранжевый акцент */
+  :root[data-look="c"] {
+    --bg: #FFFFFF; --card: #F7F0EB; --soft: #EDD3C4; --mark: #E2582B; --ink: #4A2318; --accent: #C94A1C;
+    --gold: #F6C28B; --text: #24160F; --muted: #6A5448; --line: rgba(74, 35, 24, .14);
+    --taken: #EFE9E6; --taken-text: #A8988F; --on-ink: #FFFFFF;
+    --title: "Unbounded", Arial, sans-serif; --title-weight: 300; --t: .72;
+    --script: "Unbounded", Arial, sans-serif; --script-style: normal; --script-weight: 300;
+    --body: "Geologica", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
+  }
+  /* D — «Розовый и луг»: яркий розовый и спокойный зелёный, оба из прогноза на 2027 */
+  :root[data-look="d"] {
+    --bg: #F5F7F1; --card: #FFFFFF; --soft: #F9D3E0; --mark: #6F9A5B; --ink: #213B2A; --accent: #B8336A;
+    --gold: #F2D27A; --text: #18221B; --muted: #535F56; --line: rgba(33, 59, 42, .14);
+    --taken: #E5E9E3; --taken-text: #98A39A; --on-ink: #FFFFFF;
+    --title: "Prata", Georgia, serif; --t: .88;
+    --script: "Jost", Arial, sans-serif; --script-style: italic; --script-weight: 300;
+    --body: "Jost", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--mark) transparent; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { border-radius: 3px; background: var(--mark); }
+  ::selection { background: var(--soft); color: var(--ink); }
+  body {
+    color: var(--text); background: var(--bg); caret-color: var(--ink);
+    font-family: var(--body); font-size: 16px; font-weight: var(--body-weight); line-height: 1.5;
+    min-height: 100dvh; overflow-x: hidden; font-variant-numeric: lining-nums;
+  }
+  #app { position: relative; max-width: 480px; min-height: 100dvh; margin: 0 auto; overflow-x: clip; background: var(--bg); }
+  button, input, select { font-family: inherit; font-weight: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; }
+  a { color: inherit; text-underline-offset: 4px; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .in-tg .browser-only { display: none !important; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  /* Миндалинка: форма ногтя, фирменная деталь */
+  /* Фирменная деталь: тонкая полоска цвета шампанского, к синему как золотая нить */
+  .almond { display: inline-block; flex: none; width: 24px; height: 2px; border-radius: 1px; background: var(--mark); }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px; padding: 0 24px; border-radius: 4px; background: var(--ink); color: var(--on-ink); font-size: 16px; font-weight: 600; text-align: center; text-decoration: none; transition: opacity .2s, transform .15s var(--ease); }
+  .btn:active { opacity: .9; transform: scale(.98); }
+  .btn.soft { background: var(--soft); color: var(--ink); }
+  .btn + .btn { margin-top: 8px; }
+  .round { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--card); color: var(--ink); font-size: 20px; line-height: 1; }
+
+  /* Заголовок: крупное слово, под него наезжает вторая строка */
+  .ttl { margin: 0 0 24px; color: var(--ink); font: var(--title-weight) calc(40px * var(--t))/1 var(--title); text-transform: uppercase; }
+  .ttl i { display: block; margin: -4px 0 0 28%; color: var(--accent); font-family: var(--script); font-size: calc(32px * var(--t)); font-style: var(--script-style); font-weight: var(--script-weight); line-height: 1.1; text-transform: none; }
+
+  /* Переключатель для показа: в настоящем приложении панель видит только администратор */
+  .modebar { position: sticky; top: 0; z-index: 30; display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: var(--card); box-shadow: 0 4px 16px rgba(0, 0, 0, .05); }
+  .modebar small { flex: none; font-size: 12px; color: var(--muted); }
+  .switch { flex: 1; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 8px; background: var(--soft); }
+  .switch button { padding: 8px 4px; border-radius: 4px; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .switch button.on { background: var(--ink); color: var(--on-ink); }
+
+  /* Шапка: фото во весь экран, большое название уплывает при прокрутке */
+  .hero { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: flex-end; min-height: clamp(540px, calc(100svh - 150px), 680px); padding: 72px 20px 76px; overflow: hidden; background: var(--ink); color: #fff; }
+  /* Фото стоит у верхнего края в своих пропорциях и растворяется в цвете своего же фона: руки видны целиком, вокруг воздух */
+  .hero-pic { position: absolute; inset: 0; z-index: -2; overflow: hidden; background: var(--hero-bg, var(--soft)); }
+  .hero-pic img { width: 100%; height: auto; margin-top: -56px; transform: scale(1.04); transform-origin: 50% 0; will-change: transform; -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 97%); mask-image: linear-gradient(180deg, #000 70%, transparent 97%); }
+  .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ink) 30%, transparent) 0%, transparent 16%, transparent 44%, color-mix(in srgb, var(--ink) 50%, transparent) 64%, color-mix(in srgb, var(--ink) 94%, #000) 100%),
+      transparent; }
+  .hero-kind { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: rgba(255, 255, 255, .86); }
+  .hero h1 { margin: 0 -40px 0 -4px; color: #fff; font: var(--title-weight) calc(clamp(76px, 21vw, 104px) * var(--t))/.9 var(--title); text-transform: uppercase; white-space: nowrap; will-change: transform; }
+  .hero-script { margin-top: 8px; color: #fff; font-family: var(--script); font-size: calc(32px * var(--t)); font-style: var(--script-style); font-weight: var(--script-weight); line-height: 1.1; }
+  .hero-about { margin-top: 12px; max-width: 320px; color: rgba(255, 255, 255, .88); font-size: 16px; }
+  .hero-btn { display: inline-flex; align-self: flex-start; width: auto; margin: 20px 0 0; background: #fff; color: var(--ink); }
+  .intro .hero > :not(.hero-pic) { animation: rise .8s var(--ease) both; }
+  .intro .hero > h1 { animation-delay: .06s; }
+  .intro .hero > .hero-script { animation-delay: .12s; }
+  .intro .hero > .hero-about { animation-delay: .18s; }
+  .intro .hero > .hero-btn { animation-delay: .24s; }
+  .intro .near { animation: rise .8s .3s var(--ease) both; }
+
+  /* Ближайшие окошки: белая карточка наезжает на фото */
+  .near { position: relative; z-index: 2; margin: -48px 12px 0; padding: 16px; border-radius: 24px; background: var(--card); box-shadow: 0 24px 48px -20px rgba(20, 26, 60, .3); }
+  .near-label { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
+  .near-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+  .near-slot { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 12px; border-radius: 16px; background: var(--soft); text-align: left; transition: transform .15s var(--ease); }
+  .near-slot:active { transform: scale(.97); }
+  .near-slot small { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .near-slot b { margin: 4px 0 2px; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1 var(--title); font-variant-numeric: lining-nums tabular-nums; }
+  .near-slot span { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+  .sec { padding: 48px 20px; }
+  .rose { background: var(--soft); }
+  /* Тёмный блок: чередуем светлые и тёмные, как в примере */
+  .sec.deep { background: var(--ink); color: var(--on-ink); }
+  .deep .ttl { color: #fff; }
+  .deep .ttl i { color: color-mix(in srgb, var(--mark) 60%, #fff); }
+
+  /* Появление блоков при прокрутке */
+  .reveal .sec, .reveal .foot { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal .seen { opacity: 1; transform: none; }
+
+  /* Ближайшая запись на главной */
+  .next { display: flex; gap: 12px; align-items: center; width: calc(100% - 40px); margin: 20px 20px 0; padding: 12px; text-align: left; border-radius: 12px; background: var(--card); }
+  .next img { flex: none; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: center 15%; }
+  .next b { display: block; font-size: 16px; font-weight: 600; }
+  .next span { font-size: 14px; color: var(--muted); }
+
+  /* Плитки услуг: одна высокая, две рядом, одна широкая */
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .tile { position: relative; display: flex; flex-direction: column; justify-content: flex-end; width: 100%; min-height: 148px; padding: 16px; border-radius: 12px; background: var(--soft); color: var(--ink); text-align: left; transition: background .25s, color .25s; }
+  .tile:first-child { grid-row: span 2; }
+  .tile:first-child b { font-size: calc(28px * var(--t)); }
+  .tile:last-child { grid-column: 1 / -1; min-height: 132px; flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  .tile b { display: block; font: var(--title-weight) calc(20px * var(--t))/1.1 var(--title); hyphens: auto; overflow-wrap: break-word; }
+  .tile small { display: block; margin-top: 4px; color: var(--text); font-size: 14px; transition: color .25s; }
+  .tile .almond { position: absolute; right: 16px; top: 16px; transition: transform .3s var(--ease); }
+  .tile.on { background: var(--ink); color: var(--on-ink); }
+  .tile.on small { color: var(--on-ink); }
+  .tile.on .almond { transform: rotate(180deg); }
+  .deep .tile { background: rgba(255, 255, 255, .09); color: #fff; }
+  .deep .tile small { color: rgba(255, 255, 255, .72); }
+  .deep .tile.on { background: #fff; color: var(--ink); }
+  .deep .tile.on small { color: var(--muted); }
+  /* Фото в плитке уже обрезано так, что ногти крупно в верхней части; затемнение только под текстом */
+  .tile.pic { isolation: isolate; overflow: hidden; background: var(--ink) var(--pic) var(--pos, center top) / var(--size, cover) no-repeat; }
+  .tile.pic::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 52%, color-mix(in srgb, var(--ink) 85%, transparent) 100%); }
+  /* Широкая плитка: фото справа целиком, текст слева на синем */
+  /* Высокая плитка: фото чуть отдалено, чтобы были видны обе руки, снизу растворяется в синем под текстом */
+  .tile.pic:first-child, .deep .tile.pic.on:first-child { background: color-mix(in srgb, #fff 9%, var(--ink)); }
+  .tile.pic:first-child::before { content: none; }
+  .tile.pic:first-child::after { content: ""; position: absolute; inset: 0 0 auto; height: 86%; z-index: -2; background: var(--pic) center top / cover no-repeat; -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent); mask-image: linear-gradient(180deg, #000 62%, transparent); }
+  .tile.pic:last-child, .deep .tile.pic.on:last-child { background: color-mix(in srgb, #fff 9%, var(--ink)); }
+  .tile.pic:last-child::before { left: auto; aspect-ratio: 600 / 383; background: var(--pic) center / cover; -webkit-mask-image: linear-gradient(90deg, transparent, #000 50%); mask-image: linear-gradient(90deg, transparent, #000 50%); }
+  .deep .tile.pic.on { background: var(--ink) var(--pic) var(--pos, center top) / var(--size, cover) no-repeat; color: #fff; box-shadow: inset 0 0 0 2px #fff; }
+  .deep .tile.pic.on small { color: rgba(255, 255, 255, .8); }
+
+  /* Прайс шахматкой */
+  .price { margin-top: 20px; scroll-margin-top: 64px; overflow: hidden; border-radius: 12px; background: var(--card); }
+  .price[hidden] { display: none; }
+  .price-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 16px; }
+  .price-head h3 { color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); }
+  .price-head button { min-height: 32px; color: var(--ink); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+  .row { display: grid; grid-template-columns: 1fr 1.7fr; border-top: 4px solid var(--bg); }
+  .row-num { display: flex; align-items: center; justify-content: center; min-height: 136px; background: var(--soft); color: var(--ink); font: var(--title-weight) calc(40px * var(--t))/1 var(--title); font-variant-numeric: lining-nums; }
+  .row:nth-of-type(even) { grid-template-columns: 1.7fr 1fr; }
+  .row:nth-of-type(even) .row-num { order: 2; }
+  .row-text { display: flex; flex-direction: column; padding: 16px; }
+  .row-text b { font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .row-text p { margin: 4px 0 12px; color: var(--muted); font-size: 14px; line-height: 1.45; }
+  .row-price { margin-top: auto; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1 var(--title); font-variant-numeric: lining-nums; text-align: right; }
+
+  /* Студия в арке */
+  .arch { width: 100%; aspect-ratio: 1 / 1.08; margin-bottom: 16px; object-fit: cover; object-position: center 45%; border-radius: 999px 999px 24px 24px; }
+
+  /* Полоса: бегущая строка наезжает на фото, поверх стеклянная карточка */
+  .strip { position: relative; isolation: isolate; padding: 0 0 32px; overflow: hidden; }
+  .strip-run { display: flex; width: max-content; color: var(--ink); font: var(--title-weight) calc(72px * var(--t))/1 var(--title); text-transform: uppercase; white-space: nowrap; animation: run 28s linear infinite; position: relative; z-index: 1; margin-bottom: -.22em; }
+  .strip-run span { padding-right: .5em; }
+  @keyframes run { to { transform: translateX(-50%); } }
+  .strip-pic { height: 400px; margin: 0; background: var(--soft) var(--pic) center 78% / cover; filter: saturate(.75); }
+  .glass { background: rgba(255, 255, 255, .58); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 20px 40px -24px rgba(20, 26, 60, .35); }
+  .strip-card { position: relative; margin: -132px 20px 0; padding: 20px; border-radius: 24px; }
+  .strip-card b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.15 var(--title); }
+  .strip-card p { margin: 8px 0 16px; color: var(--text); font-size: 16px; }
+
+  /* Почему выбирают */
+  .why { display: grid; gap: 8px; }
+  .why div { display: grid; gap: 4px; padding: 16px; border-radius: 12px; background: var(--card); }
+  .why .almond { margin: 4px 0 8px; }
+  .why b { font-size: 16px; font-weight: 600; }
+  .why p { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+  /* Мастера: две карточки с высоким фото, под ними рассказ о выбранном */
+  .crew { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .crew-card { min-width: 0; text-align: left; scroll-margin-top: 64px; }
+  .crew-pic { display: block; overflow: hidden; aspect-ratio: 3 / 4; border-radius: 20px; background: var(--card); transition: box-shadow .25s var(--ease); }
+  .crew-pic img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transition: transform .5s var(--ease); }
+  .crew-card:active .crew-pic img { transform: scale(1.03); }
+  .crew-card.on .crew-pic { box-shadow: 0 0 0 2px var(--soft), 0 0 0 4px var(--ink); }
+  .crew-card b { display: block; margin-top: 12px; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); }
+  .crew-card small { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; color: var(--muted); font-size: 14px; }
+  .crew-card small i { color: var(--ink); font-style: normal; font-size: 20px; line-height: 1; transition: transform .25s var(--ease); }
+  .crew-card.on small i { transform: rotate(45deg); }
+  .crew-detail:not(:empty) { margin-top: 16px; padding: 20px; border-radius: 20px; background: var(--card); animation: rise .4s var(--ease); scroll-margin-top: 64px; }
+  .crew-detail h3 { color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); }
+  .crew-detail p { margin-top: 8px; font-size: 16px; }
+  .crew-detail .can { margin-bottom: 4px; color: var(--muted); font-size: 14px; }
+  .crew-detail .btn { margin-top: 16px; }
+
+  /* Мастера: строка раскрывается, внутри описание и работы этого мастера */
+  .masters { display: grid; gap: 8px; }
+  .master { border-radius: 12px; background: var(--card); }
+  .master-row { display: grid; grid-template-columns: 64px 1fr 20px; gap: 12px; align-items: center; width: 100%; min-height: 88px; padding: 12px 16px 12px 12px; text-align: left; scroll-margin-top: 56px; }
+  .master-row img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .master-row b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); }
+  .master-row small { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; }
+  .plus { color: var(--ink); font-size: 24px; line-height: 1; transition: transform .25s var(--ease); }
+  .master.open .plus, details[open] > summary .plus { transform: rotate(45deg); }
+  .master-body { display: none; padding: 0 16px 16px; }
+  .master.open .master-body { display: block; animation: rise .4s var(--ease); }
+  .master-body p { margin-bottom: 12px; font-size: 16px; }
+  .master-body .can { color: var(--muted); font-size: 14px; }
+  .master-body .btn { margin-top: 16px; }
+
+  /* Работы */
+  .works { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+  .work { display: block; overflow: hidden; aspect-ratio: 1; border-radius: 8px; background: var(--soft); }
+  .work img { width: 100%; height: 100%; object-fit: cover; }
+  .lightbox { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(20, 16, 20, .9); }
+  .lightbox img { max-width: 100%; max-height: 82vh; border-radius: 8px; animation: rise .35s var(--ease); }
+
+  /* Отзывы */
+  .reviews { display: flex; gap: 8px; margin: 0 -20px; padding: 0 20px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 20px; scrollbar-width: none; }
+  .reviews::-webkit-scrollbar { display: none; }
+  .reviews::after { content: ""; flex: 0 0 12px; }
+  .review { flex: 0 0 84%; padding: 20px; border-radius: 12px; background: var(--card); scroll-snap-align: start; }
+  .review p { margin-bottom: 12px; font-size: 16px; line-height: 1.5; }
+  .review cite { color: var(--ink); font-size: 14px; font-style: normal; font-weight: 600; }
+
+  /* Отзывы на стекле поверх размытого фото */
+  .sec.photo { position: relative; isolation: isolate; overflow: hidden; color: #fff; background: var(--ink); }
+  .sec.photo::before { content: ""; position: absolute; inset: -24px; z-index: -2; background: var(--pic) center / cover; filter: blur(4px) saturate(.6); }
+  .sec.photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 62%, transparent), color-mix(in srgb, var(--ink) 80%, transparent)); }
+  .photo .ttl { color: #fff; }
+  .photo .ttl i { color: color-mix(in srgb, var(--mark) 60%, #fff); }
+  .photo .review { color: #fff; background: rgba(255, 255, 255, .14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
+  .photo .review cite { color: #fff; }
+
+  /* Вопросы */
+  .faq-list { display: grid; gap: 8px; }
+  .faq details { border-radius: 12px; background: var(--card); }
+  .faq summary { display: grid; grid-template-columns: 1fr 20px; gap: 12px; align-items: center; min-height: 56px; padding: 12px 16px; font-size: 16px; font-weight: 600; list-style: none; cursor: pointer; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq p { padding: 0 48px 16px 16px; color: var(--muted); font-size: 16px; }
+
+  /* Студия */
+  .place { padding-bottom: 48px; }
+  .place-photo { width: calc(100% + 40px); max-width: none; margin: 0 -20px; aspect-ratio: 1 / 1.1; object-fit: cover; object-position: center 42%; }
+  .contacts { position: relative; margin: -64px 0 0; padding: 20px; border-radius: 24px; background: var(--card); box-shadow: 0 24px 48px -24px rgba(20, 26, 60, .3); }
+  .contacts b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.15 var(--title); font-variant-numeric: lining-nums; }
+  .contacts p { margin-top: 8px; color: var(--muted); font-size: 16px; }
+  .contacts a { color: var(--ink); font-weight: 600; }
+
+  /* Подвал: тёмный, огромное название обрезано нижним краем */
+  .foot { position: relative; overflow: hidden; padding: 40px 20px 0; background: var(--ink); color: rgba(255, 255, 255, .8); }
+  .foot span { display: block; color: #fff; font-family: var(--script); font-size: calc(28px * var(--t)); font-style: var(--script-style); font-weight: var(--script-weight); line-height: 1.2; }
+  .foot p { margin-top: 12px; font-size: 14px; line-height: 1.6; }
+  .foot p a { color: #fff; }
+  .foot small { display: block; margin-top: 16px; color: rgba(255, 255, 255, .6); font-size: 12px; line-height: 1.5; }
+  .foot b { display: block; margin: 24px -20px -.2em -6px; color: rgba(255, 255, 255, .14); font: var(--title-weight) calc(clamp(96px, 27vw, 132px) * var(--t))/1 var(--title); text-transform: uppercase; white-space: nowrap; }
+  .demo-note { margin-top: 24px; padding: 12px 16px; border-radius: 12px; border: 1.5px dashed var(--mark); font-size: 14px; color: var(--muted); }
+  .demo-note b { color: var(--ink); font-weight: 600; }
+
+  /* Закреплённая кнопка, в Telegram её заменяет родная */
+  .sticky { position: fixed; z-index: 25; left: 50%; bottom: 0; width: 100%; max-width: 480px; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); background: var(--card); box-shadow: 0 -8px 24px rgba(0, 0, 0, .06); transform: translateX(-50%); }
+  .sticky[hidden] { display: none; }
+  .has-sticky { padding-bottom: 76px; }
+  .in-tg .has-sticky { padding-bottom: 0; }
+
+  /* Страницы записи */
+  .page { padding: 24px 20px 48px; }
+  .page-head { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
+  .page-head .ttl { flex: 1; min-width: 0; margin: 0; }
+
+  /* Календарь */
+  .cal { padding: 12px; border-radius: 12px; background: var(--card); }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px; }
+  .cal-head b { color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); }
+  .cal-nav { width: 40px; height: 40px; border-radius: 50%; background: var(--soft); color: var(--ink); font-size: 20px; line-height: 1; }
+  .cal-nav:disabled { opacity: .35; cursor: default; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-grid small { padding: 4px 0; font-size: 12px; font-weight: 600; text-align: center; color: var(--muted); }
+  .day { position: relative; min-width: 0; height: 44px; border-radius: 8px; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .day i { position: absolute; left: 50%; bottom: 4px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--mark); }
+  .day.today { box-shadow: inset 0 0 0 1.5px var(--mark); }
+  .day.sel { background: var(--ink); color: var(--on-ink); box-shadow: none; }
+  .day.sel i { background: var(--gold); }
+  .day:disabled { color: var(--taken-text); font-weight: 400; cursor: default; }
+  .day.empty { visibility: hidden; }
+
+  /* Окошки двумя столбиками */
+  .day-title { margin: 24px 4px 12px; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); font-variant-numeric: lining-nums; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+  .col { min-width: 0; padding: 12px; border-radius: 12px; background: var(--card); }
+  .col-head { display: flex; gap: 8px; align-items: center; min-height: 48px; margin-bottom: 12px; }
+  .col-head img { flex: none; width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .col-head div { min-width: 0; }
+  .col-head b { display: block; font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .col-head small { display: block; margin-top: 2px; font-size: 12px; line-height: 1.25; color: var(--muted); text-wrap: balance; }
+  .col-rank { display: block; font-size: 12px; font-weight: 600; color: var(--ink); }
+  .slots { display: grid; gap: 8px; }
+  .slot { padding: 12px 4px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; transition: transform .15s var(--ease); }
+  .slot:active { transform: scale(.95); }
+  .slot.taken { background: var(--taken); color: var(--taken-text); text-decoration: line-through; cursor: default; }
+  .slot.taken:active { transform: none; }
+  .slot.mine { background: var(--ink); color: var(--on-ink); cursor: default; }
+  .slot.mine small { display: block; font-size: 12px; font-weight: 400; line-height: 1.2; }
+  .col-empty { padding: 16px 4px; font-size: 14px; text-align: center; color: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 4px 0; font-size: 12px; color: var(--muted); }
+  .legend i { display: inline-block; width: 12px; height: 12px; margin-right: 4px; border-radius: 4px; vertical-align: -1px; }
+
+  /* Форма */
+  .summary { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 12px; background: var(--soft); }
+  .summary img { flex: none; width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .summary b { display: block; font-size: 16px; font-weight: 600; line-height: 1.25; }
+  .summary span { font-size: 14px; color: var(--muted); }
+  .field { display: block; margin-top: 16px; }
+  .field span { display: block; margin: 0 0 4px 2px; font-size: 14px; font-weight: 600; }
+  .field input, .field select { display: block; width: 100%; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 16px; outline: none; }
+  .field input:focus { border-color: var(--ink); }
+  .agree { display: flex; gap: 12px; align-items: flex-start; margin: 16px 2px; font-size: 14px; color: var(--muted); cursor: pointer; }
+  .agree input { flex: none; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--ink); }
+  .err { min-height: 20px; margin-bottom: 8px; font-size: 14px; font-weight: 600; text-align: center; color: #B3261E; }
+
+  /* Всплывающие окна */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(20, 16, 20, .5); animation: fade .2s ease; }
+  .overlay.center { align-items: center; padding: 16px; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .pop { width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; padding: 24px 20px calc(20px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0; background: var(--bg); animation: up .32s var(--ease); }
+  .center .pop { max-width: 400px; padding-bottom: 20px; border-radius: 16px; }
+  @keyframes up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .pop h2 { color: var(--ink); font: var(--title-weight) calc(28px * var(--t))/1.1 var(--title); font-variant-numeric: lining-nums; }
+  .pop > p { margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .pop .btn:first-of-type { margin-top: 16px; }
+  .rows { margin-top: 12px; overflow: hidden; border-radius: 12px; background: var(--card); }
+  .rows div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; font-size: 14px; border-top: 2px solid var(--bg); }
+  .rows div:first-child { border-top: 0; }
+  .rows span { flex: none; color: var(--muted); }
+  .rows b { font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+
+  /* Карточка записи: крупные скругления, фото студии в арке, мастер и дата */
+  .ticket { margin-bottom: 12px; padding: 12px; border-radius: 32px; background: var(--card); box-shadow: 0 24px 48px -28px rgba(20, 26, 60, .35); text-align: left; }
+  .ticket-top { display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: center; padding: 8px; border-radius: 24px; background: var(--soft); }
+  .ticket-top img { width: 112px; height: 128px; object-fit: cover; border-radius: 999px 999px 20px 20px; }
+  .ticket-top .status { margin: 0 0 8px; }
+  .ticket-top b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.15 var(--title); }
+  .ticket-top small { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; }
+  .ticket-bottom { display: grid; grid-template-columns: 1fr 1fr; padding: 16px 8px 4px; }
+  .ticket-bottom > div + div { padding-left: 16px; box-shadow: inset 1px 0 0 var(--line); }
+  .ticket-bottom small { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+  .ticket-bottom .who { display: flex; gap: 8px; align-items: center; font-size: 16px; font-weight: 600; }
+  .ticket-bottom .who img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .ticket-bottom b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); font-variant-numeric: lining-nums tabular-nums; }
+  .ticket-bottom span { font-size: 14px; color: var(--muted); }
+  .ticket .textlink { margin: 12px 0 0 8px; }
+  .ticket .chat { margin-top: 12px; border-radius: 24px; }
+
+  /* Готово и мои записи */
+  .done { padding: 40px 20px 40px; text-align: center; }
+  .done-mark { display: grid; place-items: center; width: 84px; height: 84px; margin: 0 auto 20px; border-radius: 50%; background: var(--ink); animation: pop .5s var(--ease); }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+  .done-mark svg { width: 40px; height: 40px; fill: none; stroke: var(--on-ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .done .ttl { margin-bottom: 0; }
+  .done .ttl i { margin: 0; }
+  .done > p { margin: 16px 0 24px; font-size: 16px; color: var(--muted); }
+  .done .ticket { margin-top: 24px; }
+  .my { margin-bottom: 12px; padding: 16px; border-radius: 12px; background: var(--card); }
+  .my-top { display: flex; gap: 12px; align-items: center; }
+  .my-top img { flex: none; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .my-top div { flex: 1; min-width: 0; }
+  .my-top b { display: block; font-size: 16px; font-weight: 600; line-height: 1.25; }
+  .my-top span { font-size: 14px; color: var(--muted); }
+  .status { display: inline-block; margin-top: 12px; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--soft); color: var(--ink); }
+  .status.ok { background: #DDEBD8; color: #2F5F2B; }
+  .status.no { background: var(--taken); color: #6F6461; }
+  .textlink { display: inline-block; margin-top: 12px; margin-left: 12px; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+  .empty-text { padding: 32px 12px; text-align: center; color: var(--muted); }
+
+  /* Сообщения бота: цвета как в самом Telegram */
+  .chat { margin-top: 12px; padding: 12px; border-radius: 12px; background: #DCE5D6; }
+  .bubble { max-width: 100%; padding: 8px 12px; border-radius: 16px; background: #fff; font-size: 14px; line-height: 1.45; color: #17212B; white-space: pre-line; overflow-wrap: anywhere; }
+  .bubble b.who { display: block; margin-bottom: 2px; font-size: 14px; font-weight: 600; color: #3390EC; }
+  .bubble .msg-title { display: flex; gap: 4px; align-items: center; font-weight: 600; }
+  .bubble .msg-title svg { width: 16px; height: 16px; fill: none; stroke: #3390EC; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .bubble + .bubble, .inline + .bubble { margin-top: 12px; }
+  .bubble time { display: block; margin-top: 2px; font-size: 12px; text-align: right; color: #8A9AA8; }
+  .inline { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px; }
+  .inline button { padding: 8px 4px; border-radius: 8px; background: rgba(23, 33, 43, .32); color: #fff; font-size: 14px; font-weight: 600; }
+  .inline button:active { background: rgba(23, 33, 43, .5); }
+  .inline button.wide { grid-column: 1 / -1; }
+
+  /* Панель администратора */
+  .admin-head { padding: 28px 20px 20px; background: var(--soft); }
+  .admin-head .ttl { margin: 0; }
+  .admin-head .ttl i { margin-left: 12%; }
+  .admin-head p { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); position: sticky; top: 56px; z-index: 20; padding: 8px 12px; background: var(--bg); box-shadow: 0 4px 16px rgba(0, 0, 0, .04); }
+  .tabs button { padding: 12px 2px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .tabs button.on { background: var(--soft); color: var(--ink); }
+  .tabs em { display: inline-block; min-width: 20px; margin-left: 4px; padding: 0 6px; border-radius: 99px; background: var(--ink); color: var(--on-ink); font-size: 12px; font-style: normal; line-height: 20px; }
+  .admin-page { padding: 20px 20px 48px; }
+  .admin-page h2 { margin-top: 32px; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.1 var(--title); font-variant-numeric: lining-nums; }
+  .admin-page h2:first-child { margin-top: 0; }
+  .admin-page > p { margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .list { margin-top: 12px; overflow: hidden; border-radius: 12px; background: var(--card); }
+  .list a, .list div.li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; font-size: 14px; text-decoration: none; border-top: 2px solid var(--bg); }
+  .list > :first-child { border-top: 0; }
+  .list b { display: block; font-weight: 600; }
+  .list small { font-size: 12px; color: var(--muted); }
+  .list .r { flex: none; text-align: right; }
+
+  /* Окошки у администратора */
+  .box { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--card); }
+  .box-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .box-head img { flex: none; width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: center 12%; }
+  .box-head div { flex: 1; min-width: 0; }
+  .box-head b { display: block; font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .box-head small { font-size: 12px; color: var(--muted); }
+  .toggle { flex: none; padding: 8px 12px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 12px; font-weight: 600; }
+  .toggle.on { background: var(--ink); color: var(--on-ink); }
+  .a-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .a-slot { min-width: 0; min-height: 56px; padding: 8px 4px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; text-align: center; }
+  .a-slot small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a-slot.busy { background: var(--ink); color: var(--on-ink); }
+  .a-slot.wait { background: var(--gold); color: var(--text); }
+  .a-slot.gone { background: none; box-shadow: inset 0 0 0 1.5px var(--taken); color: var(--taken-text); text-decoration: line-through; }
+  .a-slot.add { background: none; box-shadow: inset 0 0 0 1.5px var(--line); color: var(--muted); font-size: 14px; }
+
+  /* Расписание */
+  .segs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .segs button { padding: 12px 4px; border-radius: 8px; background: var(--card); font-size: 14px; font-weight: 600; }
+  .segs button.on { background: var(--ink); color: var(--on-ink); }
+  .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .weekdays button { padding: 8px 0; border-radius: 8px; background: var(--taken); color: var(--taken-text); font-size: 12px; font-weight: 600; }
+  .weekdays button.on { background: var(--soft); color: var(--ink); }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .row3 .field { margin-top: 12px; min-width: 0; }
+  .row3 .field span { font-size: 12px; }
+  .row3 input, .row3 select { padding: 12px 4px; font-size: 14px; text-align: center; }
+  .preview { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .reset { display: block; margin: 24px auto 0; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+
+  .notice { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 70; width: calc(100% - 40px); max-width: 440px; padding: 12px 16px; border-radius: 8px; transform: translate(-50%, 16px); background: var(--text); color: var(--on-ink); font-size: 14px; font-weight: 600; text-align: center; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s var(--ease); }
+  .notice.show { opacity: 1; transform: translate(-50%, 0); }
+
+
+  /* Узкие телефоны: длинная вторая строка не должна вылезать за край */
+  @media (max-width: 359px) {
+    .ttl i { margin-left: 10%; }
+    .admin-head .ttl i { margin-left: 0; }
+    .near-slot { padding: 8px; }
+    .near { margin-left: 8px; margin-right: 8px; padding: 12px; }
+    .tile { padding: 12px; }
+    .tile b { font-size: calc(18px * var(--t)); }
+    .tile:first-child b { font-size: calc(24px * var(--t)); }
+    .ticket-top { grid-template-columns: 88px 1fr; gap: 12px; }
+    .ticket-top img { width: 88px; height: 104px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .reveal .sec, .reveal .foot { opacity: 1; transform: none; }
+    .strip-run { animation: none; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><clipPath id="nail" clipPathUnits="objectBoundingBox"><path d="M.5 0C.78 .05 1 .25 1 .52V1H0V.52C0 .25 .22 .05 .5 0Z"/></clipPath></svg>
+<div id="app"></div>
+<div id="layer"></div>
+<div id="notice" class="notice"></div>
+
+<script>
+/* ---------- Всё содержимое меняем здесь ---------- */
+const CONFIG = {
+  demo: true,                          // true — вверху переключатель «Клиент / Администратор», данные живут в этом браузере
+  look: "a",                         // стиль: "0" пудра, "a" синяя глазурь, "b" баклажан, "c" глина и апельсин, "d" розовый и луг. Сравнить все: looks.html
+  storageKey: "salon_demo_v1",
+  salon: {
+    name: "Миндаль",
+    kind: "Студия маникюра на Садовой",
+    script: "маникюр без спешки",
+    about: "В маленькой студии работают два мастера. Свободное окошко можно выбрать прямо здесь, звонить никуда не нужно.",
+    address: "ул. Садовая, 15, второй этаж",
+    way: "Вход со двора, домофон 15",
+    hours: "Каждый день с 8:00 до 20:00",
+    phone: "+7 (900) 000-00-00",
+    botName: "Студия Миндаль",
+  },
+  photos: {                            // фото с Unsplash, авторы в img/источники фото.txt
+    hero: "img/hands-up.webp",         // шапка: Инна выбрала 10.11.2026
+    heroBg: "#B6BCC6",                 // цвет фона самого фото, в него фото растворяется снизу
+    strip: "img/hand-cloth.webp",      // полоса с бегущей строкой
+    reviews: "img/hand-sky.webp",      // размытый фон под отзывами
+  },
+  banner: "img/hero.webp",             // интерьер: арка в «Почему» и карточка записи
+  studio: "img/studio.webp",
+  strip: { run: "маникюр без спешки", title: "Свободные окошки видно сразу", text: "Выберите день и время, а администратор подтвердит запись сообщением." },
+  services: [
+    { id: "cover", title: "Покрытие", from: "от 2 200 ₽", photo: "img/tile-cover.webp", items: [
+      { title: "Однотонное покрытие", text: "Снимаем старое, приводим в порядок кутикулу и покрываем гель-лаком.", price: "2 200 ₽" },
+      { title: "Покрытие с укреплением", text: "Для тонких ногтей, которые ломаются и слоятся.", price: "2 600 ₽" },
+      { title: "Кошачий глаз", text: "Глубокий цвет с полоской света, которая двигается вместе с рукой.", price: "2 900 ₽" },
+    ] },
+    { id: "french", title: "Френч", from: "от 2 500 ₽", photo: "img/tile-french.webp", items: [
+      { title: "Классический френч", text: "Тонкая белая линия по краю на молочной основе.", price: "2 500 ₽" },
+      { title: "Френч с тонкой линией", text: "Линии рисует мастер от руки, можно принести свою картинку.", price: "3 000 ₽" },
+    ] },
+    { id: "nails", title: "Наращивание", from: "от 3 500 ₽", photo: "img/tile-nails.webp", items: [
+      { title: "Наращивание", text: "Форму и длину выбираем вместе. Делает Виктория.", price: "3 500 ₽" },
+      { title: "Коррекция", text: "Если с прошлого наращивания прошло три-четыре недели.", price: "3 000 ₽" },
+    ] },
+    { id: "pedi", title: "Педикюр", from: "от 2 400 ₽", photo: "img/tile-pedi.webp", items: [
+      { title: "Педикюр с покрытием", text: "Стопы, ногти и покрытие гель-лаком в одном цвете.", price: "2 800 ₽" },
+      { title: "Педикюр без покрытия", text: "Если нужны только ухоженные стопы и аккуратная форма ногтей.", price: "2 400 ₽" },
+    ] },
+  ],
+  why: [
+    { title: "Запись без звонков", text: "Смотрите свободные окошки в приложении и выбираете удобное. Даже поздно вечером." },
+    { title: "Стерильные инструменты", text: "Каждый набор проходит стерилизацию, а крафт-пакет вскрываем при вас." },
+    { title: "Никакой спешки", text: "Время заложено с запасом, поэтому следующая гостья не ждёт под дверью." },
+  ],
+  masters: [
+    {
+      id: "daria", name: "Дарья Соколова", short: "Дарья", rank: "Мастер", photo: "img/daria.webp",
+      years: "3 года", time: "2 часа", timeShort: "2 ч", price: "от 2 200 ₽",
+      about: "К Дарье приходят за аккуратным однотонным покрытием, френчем и укреплением. Она никуда не торопится и подскажет оттенок, если вы застыли перед палитрой.",
+      can: "Покрытие, френч, укрепление, педикюр. От 2 200 ₽, около 2 часов.",
+      schedule: { days: [1, 2, 3, 4, 5, 6], from: "08:00", to: "20:00", step: 120 },
+    },
+    {
+      id: "viktoria", name: "Виктория Белова", short: "Виктория", rank: "Топ-мастер", top: true, photo: "img/viktoria.webp",
+      years: "9 лет", time: "1,5 часа", timeShort: "1,5 ч", price: "от 3 500 ₽",
+      about: "Виктория обучает мастеров и берёт сложные работы: наращивание, тонкие линии от руки, ремонт после неудачного маникюра.",
+      can: "Всё то же, плюс наращивание и ремонт. От 3 500 ₽, около 1,5 часа.",
+      schedule: { days: [2, 3, 4, 5, 6, 0], from: "10:00", to: "20:00", step: 120 },
+    },
+  ],
+  works: [
+    { src: "img/d1.webp", master: "daria", title: "Молочный нюд" },
+    { src: "img/d2.webp", master: "daria", title: "Френч" },
+    { src: "img/d3.webp", master: "daria", title: "Пыльная роза" },
+    { src: "img/d4.webp", master: "daria", title: "Вишня" },
+    { src: "img/v1.webp", master: "viktoria", title: "Тонкие линии" },
+    { src: "img/v3.webp", master: "viktoria", title: "Кошачий глаз" },
+  ],
+  reviews: [
+    { text: "Хожу к Дарье уже полгода. Покрытие спокойно держится три недели, ни одного скола, хотя я постоянно мою посуду без перчаток.", name: "Ольга" },
+    { text: "Сломала ноготь за день до свадьбы подруги. Виктория всё восстановила так, что я сама не нашла, какой был сломан.", name: "Екатерина" },
+    { text: "Записалась вечером из дома за минуту, а утром уже пришло подтверждение. Не пришлось никому дозваниваться.", name: "Алина" },
+    { text: "Принесла картинку с тонкими линиями и думала, что так не получится. Получилось даже аккуратнее, чем на картинке.", name: "Наталья" },
+  ],
+  faq: [
+    { q: "За сколько дней лучше записываться?", a: "Обычно хватает двух-трёх дней. На пятницу и субботу окошки разбирают быстрее." },
+    { q: "Как перенести или отменить запись?", a: "Напишите нам хотя бы за несколько часов, и мы подберём другое время." },
+    { q: "Что делать, если покрытие скололось?", a: "Если это случилось в первые пять дней, исправим бесплатно. Просто пришлите фото." },
+    { q: "Можно ли прийти с ребёнком?", a: "Да, предупредите заранее, и мы подготовим для него место и карандаши." },
+    { q: "Вы работаете в праздники?", a: "Да, кроме 1 января. График на праздничные дни видно прямо в окошках записи." },
+  ],
+  demoNote: "Это пример: студия, мастера и отзывы вымышленные, настоящие записи никуда не уходят.",
+  sampleClients: ["Анна", "Мария", "Елена", "Ксения", "Полина", "Ирина", "Светлана", "Юлия", "Татьяна", "Вера"],
+  startRange: 30,                      // на сколько дней вперёд открыта запись, администратор может поменять
+  adminRange: 60,                      // сколько дней вперёд видит администратор
+};
+
+/* ---------- Стиль: цвета лежат в начале файла, здесь только шрифты к ним ---------- */
+const FONTS = {
+  "0": "Manrope:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;1,400",
+  a: "Tenor+Sans&family=Ysabeau+Office:ital,wght@1,400&family=Onest:wght@400;500;600",
+  b: "Noto+Serif+Display:ital,wght@0,300;1,300&family=Commissioner:wght@400;500;600",
+  c: "Unbounded:wght@300;400&family=Geologica:wght@400;500;600",
+  d: "Prata&family=Jost:ital,wght@0,400;0,500;0,600;1,300",
+};
+const LOOK = (() => {
+  const asked = new URLSearchParams(location.search).get("look");
+  return FONTS[asked] ? asked : (FONTS[CONFIG.look] ? CONFIG.look : "0");
+})();
+if (LOOK !== "0") document.documentElement.dataset.look = LOOK;
+document.getElementById("fonts").href = "https://fonts.googleapis.com/css2?family=" + FONTS[LOOK] + "&display=swap";
+
+const tg = window.Telegram && Telegram.WebApp;
+const inTelegram = !!(tg && tg.platform && tg.platform !== "unknown");
+if (inTelegram) {
+  tg.ready();
+  tg.expand();
+  document.documentElement.classList.add("in-tg");
+  const css = getComputedStyle(document.documentElement);
+  try {
+    tg.setHeaderColor(css.getPropertyValue("--ink").trim());
+    tg.setBackgroundColor(css.getPropertyValue("--bg").trim());
+    tg.MainButton.setParams({ color: css.getPropertyValue("--ink").trim(), text_color: "#ffffff" });
+    if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+  } catch (e) {}
+}
+
+const app = document.getElementById("app");
+const layer = document.getElementById("layer");
+const noticeEl = document.getElementById("notice");
+const MASTER = Object.fromEntries(CONFIG.masters.map(m => [m.id, m]));
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+const ALMOND = '<i class="almond" aria-hidden="true"></i>';   // тонкая полоска шампанского (раньше была миндалинка)
+const BELL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16ZM10 20.5a2 2 0 0 0 4 0"/></svg>';
+const ttl = (big, small, tag = "h2") => `<${tag} class="ttl">${esc(big)}<i>${esc(small)}</i></${tag}>`;
+function haptic(kind = "light") {
+  if (inTelegram && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(kind);
+}
+let noticeTimer = null;
+function showNotice(text) {
+  noticeEl.textContent = text;
+  noticeEl.classList.add("show");
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => noticeEl.classList.remove("show"), 3200);
+}
+
+/* ---------- Даты: храним строкой 2026-11-05, считаем в местном времени ---------- */
+const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
+const MONTHS_OF = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const WEEK = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+const WEEK_FULL = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+const pad = n => String(n).padStart(2, "0");
+const toKey = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const fromKey = key => { const [y, m, d] = key.split("-").map(Number); return new Date(y, m - 1, d); };
+const todayKey = () => toKey(new Date());
+const addDays = (key, n) => { const d = fromKey(key); d.setDate(d.getDate() + n); return toKey(d); };
+const dayNum = key => Math.round(fromKey(key).getTime() / 864e5);
+const dateText = key => { const d = fromKey(key); return d.getDate() + " " + MONTHS_OF[d.getMonth()]; };
+const dateFull = key => WEEK[fromKey(key).getDay()] + ", " + dateText(key);
+const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+const toTime = min => pad(Math.floor(min / 60)) + ":" + pad(min % 60);
+
+/* ---------- Данные. В настоящей версии этот блок заменяют обращения к серверу, экраны остаются те же ---------- */
+let db = null;
+
+function defaultDb() {
+  const schedules = {};
+  CONFIG.masters.forEach(m => { schedules[m.id] = Object.assign({}, m.schedule); });
+  return { range: CONFIG.startRange, schedules, overrides: {}, bookings: [], seededUntil: null, next: 1 };
+}
+function saveDb() {
+  try { localStorage.setItem(CONFIG.storageKey, JSON.stringify(db)); } catch (e) {}
+}
+function loadDb() {
+  try { db = JSON.parse(localStorage.getItem(CONFIG.storageKey)); } catch (e) { db = null; }
+  const fresh = !db || !db.schedules;
+  if (fresh) db = defaultDb();
+  seedBookings(fresh);
+  saveDb();
+}
+
+// Простое стабильное «случайное» число, чтобы календарь выглядел живым
+function hash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+function samplePhone(h) {
+  return "+7 (900) 000-" + pad(h % 90 + 10) + "-" + pad((h >> 5) % 90 + 10);
+}
+// Показываем чужие записи, чтобы часть окошек уже была занята. Подальше в будущем их меньше, как в жизни
+function seedBookings(fresh) {
+  const today = todayKey();
+  db.bookings = db.bookings.filter(b => b.source !== "sample" || b.date >= today);
+  const start = db.seededUntil && db.seededUntil >= today ? addDays(db.seededUntil, 1) : today;
+  const end = addDays(today, CONFIG.adminRange);
+  for (let key = start; key <= end; key = addDays(key, 1)) {
+    const far = dayNum(key) - dayNum(today);
+    CONFIG.masters.forEach(m => {
+      templateTimes(m.id, key).forEach(time => {
+        const h = hash(key + m.id + time);
+        if (h % 100 < Math.max(6, 48 - far * 1.5)) addSample(key, m.id, time, h, "confirmed");
+      });
+    });
+  }
+  db.seededUntil = end;
+  if (fresh) addFirstRequests(today);
+}
+function addSample(date, master, time, h, status) {
+  const names = CONFIG.sampleClients;
+  db.bookings.push({ id: db.next++, date, master, time, status, source: "sample", name: names[h % names.length], phone: samplePhone(h), at: Date.now() - (h % 720) * 6e4 });
+}
+// Две заявки ждут ответа, чтобы у администратора сразу было что нажать
+function addFirstRequests(today) {
+  let left = 2;
+  for (let n = 1; n < 14 && left; n++) {
+    const key = addDays(today, n);
+    CONFIG.masters.forEach(m => {
+      if (!left) return;
+      const free = dayTimes(m.id, key).filter(t => !activeBooking(m.id, key, t));
+      if (free.length) { addSample(key, m.id, free[free.length - 1], hash(key + m.id) + left, "pending"); left--; }
+    });
+  }
+}
+
+function genTimes(s) {
+  const out = [];
+  if (!s.step || s.step < 15) return out;
+  for (let t = toMin(s.from); t + s.step <= toMin(s.to); t += s.step) out.push(toTime(t));
+  return out;
+}
+function templateTimes(masterId, key) {
+  const s = db.schedules[masterId];
+  return s.days.includes(fromKey(key).getDay()) ? genTimes(s) : [];
+}
+function override(masterId, key, create) {
+  const day = db.overrides[key];
+  if (!create) return (day && day[masterId]) || { off: false, add: [], del: [] };
+  if (!db.overrides[key]) db.overrides[key] = {};
+  if (!db.overrides[key][masterId]) db.overrides[key][masterId] = { off: false, add: [], del: [] };
+  return db.overrides[key][masterId];
+}
+const isActive = b => b.status === "pending" || b.status === "confirmed";
+const activeBooking = (masterId, key, time) => db.bookings.find(b => isActive(b) && b.master === masterId && b.date === key && b.time === time);
+const dayBookings = (masterId, key) => db.bookings.filter(b => isActive(b) && b.master === masterId && b.date === key);
+
+// Окошки дня = шаблон мастера, плюс добавленные вручную, минус убранные. Занятое время остаётся видно в любом случае
+function dayTimes(masterId, key) {
+  const ov = override(masterId, key);
+  const set = new Set();
+  if (!ov.off) {
+    templateTimes(masterId, key).forEach(t => set.add(t));
+    ov.add.forEach(t => set.add(t));
+    ov.del.forEach(t => set.delete(t));
+  }
+  dayBookings(masterId, key).forEach(b => set.add(b.time));
+  return [...set].sort();
+}
+function isPast(key, time) {
+  const today = todayKey();
+  if (key !== today) return key < today;
+  const now = new Date();
+  return toMin(time) <= now.getHours() * 60 + now.getMinutes();
+}
+const clientTimes = (masterId, key) => dayTimes(masterId, key).filter(t => !isPast(key, t));
+const freeCount = key => CONFIG.masters.reduce((sum, m) => sum + clientTimes(m.id, key).filter(t => !activeBooking(m.id, key, t)).length, 0);
+const bookable = key => key >= todayKey() && dayNum(key) - dayNum(todayKey()) < db.range && freeCount(key) > 0;
+
+function createBooking(fields) {
+  const b = Object.assign({ id: db.next++, at: Date.now() }, fields);
+  db.bookings.push(b);
+  saveDb();
+  return b;
+}
+function setStatus(id, status) {
+  const b = db.bookings.find(x => x.id === id);
+  if (!b) return null;
+  b.status = status;
+  if (b.source === "client") b.fresh = status;   // клиент увидит сообщение бота, когда вернётся
+  saveDb();
+  return b;
+}
+
+/* ---------- Сообщения бота ---------- */
+const clockText = ms => { const d = new Date(ms); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+function adminMessage(b) {
+  const m = MASTER[b.master];
+  return m.short + ", " + m.rank.toLowerCase() + "\n" + dateFull(b.date) + ", " + b.time + "\n" + b.name + ", " + b.phone;
+}
+function clientMessage(b) {
+  const m = MASTER[b.master];
+  if (b.status === "confirmed") return "Ждём вас " + dateText(b.date) + " в " + b.time + ", мастер " + m.short + ".\n" + CONFIG.salon.address + ". Если планы поменяются, напишите нам заранее.";
+  if (b.status === "rejected") return "Не получилось подтвердить " + dateText(b.date) + " в " + b.time + ". Администратор напишет вам лично и предложит другое время.";
+  if (b.status === "cancelled") return "Запись на " + dateText(b.date) + " в " + b.time + " отменена.";
+  return "Заявку получили. Как только администратор подтвердит запись, здесь появится сообщение.";
+}
+const STATUS = { pending: ["Ждёт подтверждения", ""], confirmed: ["Подтверждена", "ok"], rejected: ["Не подтверждена", "no"], cancelled: ["Отменена", "no"] };
+const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>';
+
+/* ---------- Переключатель для показа ---------- */
+function modeBar(admin) {
+  if (!CONFIG.demo) return "";
+  return `<div class="modebar"><small>Пример</small><div class="switch">
+    <button data-act="go" data-to="#" class="${admin ? "" : "on"}">Клиент</button>
+    <button data-act="go" data-to="#admin" class="${admin ? "on" : ""}">Администратор</button>
+  </div></div>`;
+}
+
+/* ---------- Главная ---------- */
+let openMaster = null;   // чья строка раскрыта
+
+function renderHome() {
+  const s = CONFIG.salon;
+  const mine = db.bookings.filter(b => b.source === "client" && isActive(b) && !isPast(b.date, b.time)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0];
+  app.innerHTML = modeBar(false) + `
+    <div class="has-sticky">
+      <header class="hero">
+        <div class="hero-pic" style="--hero-bg:${esc(CONFIG.photos.heroBg)}"><img src="${esc(CONFIG.photos.hero)}" alt=""></div>
+        <p class="hero-kind"><span>${esc(s.kind)}</span></p>
+        <h1>${esc(s.name)}</h1>
+        <p class="hero-script">${esc(s.script)}</p>
+        <p class="hero-about">${esc(s.about)}</p>
+        <button class="btn hero-btn" data-act="go" data-to="#book">Записаться <span aria-hidden="true">→</span></button>
+      </header>
+      ${nearHtml()}
+      <main>
+        ${mine ? `<button class="next" data-act="go" data-to="#my"><img src="${MASTER[mine.master].photo}" alt=""><div><b>${esc(dateFull(mine.date))}, ${mine.time}</b><span>${mine.status === "confirmed" ? "Запись подтверждена" : "Ждём подтверждения администратора"}. Мои записи ›</span></div></button>` : ""}
+
+        <section class="sec deep">
+          ${ttl("Услуги", "и цены")}
+          <div class="tiles">
+            ${CONFIG.services.map((v, i) => `
+              <button class="tile${v.photo ? " pic" : ""}" data-act="tile" data-id="${v.id}" aria-expanded="false" aria-controls="price"${v.photo ? ` style="--pic:url('${esc(v.photo)}')${v.photoPos ? `;--pos:${esc(v.photoPos)}` : ""}"` : ""}>
+                <span><b>${esc(v.title)}</b><small>${esc(v.from)}</small></span>
+              </button>`).join("")}
+          </div>
+          <div class="price" id="price" hidden></div>
+        </section>
+
+        <section class="sec">
+          ${ttl("Почему", "выбирают нас")}
+          <img class="arch" src="${esc(CONFIG.banner)}" alt="Рабочее место в студии" loading="lazy">
+          <div class="why">${CONFIG.why.map(w => `<div>${ALMOND}<b>${esc(w.title)}</b><p>${esc(w.text)}</p></div>`).join("")}</div>
+        </section>
+
+        <section class="strip" aria-label="${esc(CONFIG.strip.title)}">
+          <p class="strip-run" aria-hidden="true">${Array(4).fill(`<span>${esc(CONFIG.strip.run)}</span>`).join("")}</p>
+          <div class="strip-pic" style="--pic:url('${esc(CONFIG.photos.strip)}')"></div>
+          <div class="strip-card glass">
+            <b>${esc(CONFIG.strip.title)}</b>
+            <p>${esc(CONFIG.strip.text)}</p>
+            <button class="btn" data-act="go" data-to="#book">Выбрать окошко</button>
+          </div>
+        </section>
+
+        <section class="sec rose">
+          ${ttl("Мастера", "студии")}
+          <div class="crew">${CONFIG.masters.map(crewCard).join("")}</div>
+          <div class="crew-detail" id="crew-detail">${openMaster ? masterDetail(MASTER[openMaster]) : ""}</div>
+        </section>
+
+        <section class="sec photo" style="--pic:url('${esc(CONFIG.photos.reviews)}')">
+          ${ttl("Отзывы", "наших гостей")}
+          <div class="reviews">${CONFIG.reviews.map(r => `<blockquote class="review"><p>${esc(r.text)}</p><cite>${esc(r.name)}</cite></blockquote>`).join("")}</div>
+        </section>
+
+        <section class="sec faq">
+          ${ttl("Вопросы", "и ответы")}
+          <div class="faq-list">${CONFIG.faq.map(f => `<details><summary>${esc(f.q)}<span class="plus" aria-hidden="true">+</span></summary><p>${esc(f.a)}</p></details>`).join("")}</div>
+        </section>
+
+        <section class="sec place">
+          ${ttl("Студия", "где нас найти")}
+          <img class="place-photo" src="${esc(CONFIG.studio)}" alt="Стена с лаками в студии" loading="lazy">
+          <div class="contacts">
+            <b>${esc(s.address)}</b>
+            <p>${esc(s.way)}<br>${esc(s.hours)}<br><a href="tel:${esc(s.phone.replace(/[^+\d]/g, ""))}">${esc(s.phone)}</a></p>
+          </div>
+        </section>
+      </main>
+      <footer class="foot">
+        <span>${esc(s.script)}</span>
+        <p>${esc(s.address)}<br>${esc(s.hours)}<br><a href="tel:${esc(s.phone.replace(/[^+\d]/g, ""))}">${esc(s.phone)}</a></p>
+        ${CONFIG.demo ? `<small>${esc(CONFIG.demoNote)}</small>` : ""}
+        <b aria-hidden="true">${esc(s.name)}</b>
+      </footer>
+    </div>
+    <div class="sticky browser-only"><button class="btn" data-act="go" data-to="#book">Записаться</button></div>`;
+  setMainButton("Записаться", () => go("#book"));
+  watchHeroButton();
+  playIntro();
+  revealSections();
+  heroDrift();
+}
+// Шапка при прокрутке: название уплывает влево, фото чуть отстаёт
+const calm = matchMedia("(prefers-reduced-motion: reduce)");
+function heroDrift() {
+  const name = app.querySelector(".hero h1"), pic = app.querySelector(".hero-pic img");
+  if (!name || calm.matches) return;
+  const y = Math.min(window.scrollY, 900);
+  name.style.transform = `translateX(${(-y * .4).toFixed(1)}px)`;
+  pic.style.transform = `translateY(${(y * .3).toFixed(1)}px) scale(1.04)`;
+}
+let driftQueued = false;
+window.addEventListener("scroll", () => {
+  if (driftQueued) return;
+  driftQueued = true;
+  requestAnimationFrame(() => { driftQueued = false; heroDrift(); });
+}, { passive: true });
+// Ближайшие свободные окошки: можно записаться прямо с первого экрана
+function nearSlots(n = 3) {
+  const out = [];
+  const today = todayKey();
+  for (let i = 0; i < db.range && out.length < n; i++) {
+    const key = addDays(today, i);
+    const day = [];
+    CONFIG.masters.forEach(m => clientTimes(m.id, key).forEach(t => { if (!activeBooking(m.id, key, t)) day.push({ key, t, m, i }); }));
+    day.sort((x, y) => x.t.localeCompare(y.t)).forEach(x => { if (out.length < n) out.push(x); });
+  }
+  return out;
+}
+function nearHtml() {
+  const list = nearSlots();
+  if (!list.length) return "";
+  const label = x => x.i === 0 ? "Сегодня" : x.i === 1 ? "Завтра" : WEEK[fromKey(x.key).getDay()] + ", " + dateText(x.key);
+  return `<div class="near">
+    <p class="near-label">${ALMOND}Ближайшие свободные окошки</p>
+    <div class="near-row">${list.map(x => `<button class="near-slot" data-act="pick-slot" data-date="${x.key}" data-master="${x.m.id}" data-time="${x.t}">
+      <small>${label(x)}</small><b>${x.t}</b><span>${esc(x.m.short)}</span></button>`).join("")}</div>
+  </div>`;
+}
+// Баннер появляется плавно один раз, при возврате на главную уже не мелькает
+let introDone = false;
+function playIntro() {
+  if (introDone) return;
+  introDone = true;
+  app.classList.add("intro");
+  setTimeout(() => app.classList.remove("intro"), 1400);
+}
+// Блоки ниже баннера проявляются, когда до них доходит прокрутка
+let revealWatch = null;
+function revealSections() {
+  if (revealWatch) revealWatch.disconnect();
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const wrap = app.querySelector(".has-sticky");
+  wrap.classList.add("reveal");
+  revealWatch = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("seen"); revealWatch.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -10% 0px" });
+  wrap.querySelectorAll(".sec, .foot").forEach(el => revealWatch.observe(el));
+}
+// Пока кнопка в баннере на экране, вторая внизу не нужна
+let heroWatch = null;
+function watchHeroButton() {
+  const sticky = app.querySelector(".sticky");
+  heroWatch = new IntersectionObserver(([e]) => {
+    sticky.hidden = e.isIntersecting;
+    if (inTelegram) { if (e.isIntersecting) tg.MainButton.hide(); else tg.MainButton.show(); }
+  });
+  heroWatch.observe(app.querySelector(".hero-btn"));
+}
+function crewCard(m) {
+  return `<button class="crew-card ${openMaster === m.id ? "on" : ""}" data-act="toggle-master" data-id="${m.id}" aria-expanded="${openMaster === m.id}" aria-controls="crew-detail">
+    <span class="crew-pic"><img src="${m.photo}" alt="${esc(m.name)}" loading="lazy"></span>
+    <b>${esc(m.short)}</b>
+    <small><span>${esc(m.rank)}, ${esc(m.years)}</span><i aria-hidden="true">+</i></small>
+  </button>`;
+}
+function masterDetail(m) {
+  return `<h3>${esc(m.name)}</h3>
+    <p>${esc(m.about)}</p>
+    <p class="can">${esc(m.can)}</p>
+    <div class="works">${worksHtml(m.id)}</div>
+    <button class="btn" data-act="go" data-to="#book">Посмотреть окошки</button>`;
+}
+function worksHtml(masterId) {
+  return CONFIG.works.filter(w => w.master === masterId)
+    .map(w => `<button class="work" data-act="photo" data-src="${w.src}"><img src="${w.src}" alt="${esc(w.title)}" loading="lazy"></button>`).join("");
+}
+function openPrice(id) {
+  const box = document.getElementById("price");
+  if (!box.hidden && box.dataset.id === id) { closePrice(); return; }
+  app.querySelectorAll(".tile").forEach(t => {
+    const on = t.dataset.id === id;
+    t.classList.toggle("on", on);
+    t.setAttribute("aria-expanded", on);
+  });
+  const v = CONFIG.services.find(x => x.id === id);
+  box.dataset.id = id;
+  box.hidden = false;
+  box.innerHTML = `
+    <div class="price-head"><h3>${esc(v.title)}</h3><button data-act="close-price">Свернуть</button></div>
+    ${v.items.map((p, i) => `
+      <div class="row">
+        <div class="row-num" aria-hidden="true">0${i + 1}</div>
+        <div class="row-text">
+          <b>${esc(p.title)}</b>
+          <p>${esc(p.text)}</p>
+          <span class="row-price">${esc(p.price)}</span>
+        </div>
+      </div>`).join("")}`;
+  box.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+function closePrice() {
+  const box = document.getElementById("price");
+  box.hidden = true;
+  box.dataset.id = "";
+  app.querySelectorAll(".tile").forEach(t => { t.classList.remove("on"); t.setAttribute("aria-expanded", "false"); });
+}
+
+/* ---------- Календарь: общий для клиента и администратора ---------- */
+let calMonth = null;     // { y, m } — какой месяц показан
+let selDate = null;      // день клиента
+let adminDate = null;    // день администратора
+
+function firstBookable() {
+  const today = todayKey();
+  for (let n = 0; n < db.range; n++) { const key = addDays(today, n); if (bookable(key)) return key; }
+  return null;
+}
+function calendarHtml(selected, canPick, lastKey) {
+  const { y, m } = calMonth;
+  const first = new Date(y, m, 1);
+  const count = new Date(y, m + 1, 0).getDate();
+  const shift = (first.getDay() + 6) % 7;
+  const today = todayKey();
+  const prevOk = toKey(new Date(y, m, 0)) >= today;
+  const nextOk = toKey(new Date(y, m + 1, 1)) <= lastKey;
+  let cells = "";
+  for (let i = 0; i < shift; i++) cells += '<span class="day empty"></span>';
+  for (let d = 1; d <= count; d++) {
+    const key = toKey(new Date(y, m, d));
+    const ok = canPick(key);
+    cells += `<button class="day ${key === today ? "today" : ""} ${key === selected ? "sel" : ""}" data-act="pick-day" data-key="${key}" ${ok ? "" : "disabled"}>${d}${ok && freeCount(key) ? "<i></i>" : ""}</button>`;
+  }
+  return `<div class="cal">
+    <div class="cal-head">
+      <button class="cal-nav" data-act="month" data-dir="-1" ${prevOk ? "" : "disabled"} aria-label="Назад">‹</button>
+      <b>${MONTHS[m][0].toUpperCase() + MONTHS[m].slice(1)}</b>
+      <button class="cal-nav" data-act="month" data-dir="1" ${nextOk ? "" : "disabled"} aria-label="Вперёд">›</button>
+    </div>
+    <div class="cal-grid">${["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map(w => `<small>${w}</small>`).join("")}${cells}</div>
+  </div>`;
+}
+function setCalMonth(key) {
+  const d = fromKey(key);
+  calMonth = { y: d.getFullYear(), m: d.getMonth() };
+}
+
+/* ---------- Клиент: выбор окошка ---------- */
+function renderBook() {
+  if (!selDate || !bookable(selDate)) selDate = firstBookable();
+  if (!calMonth) setCalMonth(selDate || todayKey());
+  const last = addDays(todayKey(), db.range - 1);
+  const day = selDate;
+  app.innerHTML = modeBar(false) + `<main class="page">
+    <div class="page-head">
+      <button class="round browser-only" data-act="go" data-to="#" aria-label="Назад">‹</button>
+      ${ttl("Выберите", "день", "h1")}
+    </div>
+    ${calendarHtml(day, bookable, last)}
+    ${day ? `<h2 class="day-title">${WEEK_FULL[fromKey(day).getDay()][0].toUpperCase() + WEEK_FULL[fromKey(day).getDay()].slice(1)}, ${dateText(day)}</h2>
+      <div class="cols">${CONFIG.masters.map(m => columnHtml(m, day)).join("")}</div>
+      <div class="legend"><span><i style="background:var(--soft)"></i>свободно</span><span><i style="background:var(--taken)"></i>занято</span></div>`
+    : `<p class="empty-text">Все окошки разобрали. Новые дни открываются каждое утро.</p>`}
+  </main>`;
+  setMainButton(null);
+}
+function columnHtml(m, key) {
+  const times = clientTimes(m.id, key);
+  return `<div class="col">
+    <div class="col-head"><img src="${m.photo}" alt=""><div><span class="col-rank">${esc(m.rank)}</span><b>${esc(m.short)}</b><small>${esc(m.timeShort)} · ${esc(m.price)}</small></div></div>
+    ${times.length ? `<div class="slots">${times.map(t => {
+      const b = activeBooking(m.id, key, t);
+      if (!b) return `<button class="slot" data-act="pick-slot" data-master="${m.id}" data-time="${t}">${t}</button>`;
+      if (b.source === "client") return `<div class="slot mine">${t}<small>ваша запись</small></div>`;
+      return `<div class="slot taken">${t}</div>`;
+    }).join("")}</div>` : `<div class="col-empty">В этот день не работает</div>`}
+  </div>`;
+}
+
+/* ---------- Клиент: имя и телефон ---------- */
+let pick = null;   // { date, time, master }
+let draft = { name: "", phone: "", agree: false };
+
+function formatPhone(value) {
+  let d = value.replace(/\D/g, "");
+  if (!d) return "";
+  if (d[0] === "8") d = "7" + d.slice(1);
+  if (d[0] !== "7") d = "7" + d;
+  d = d.slice(0, 11);
+  let out = "+7";
+  if (d.length > 1) out += " (" + d.slice(1, 4);
+  if (d.length >= 4) out += ")";
+  if (d.length > 4) out += " " + d.slice(4, 7);
+  if (d.length > 7) out += "-" + d.slice(7, 9);
+  if (d.length > 9) out += "-" + d.slice(9, 11);
+  return out;
+}
+const phoneOk = value => value.replace(/\D/g, "").length === 11;
+
+function renderForm() {
+  if (!pick) { location.hash = "#book"; return; }
+  const m = MASTER[pick.master];
+  if (!draft.name && inTelegram && tg.initDataUnsafe && tg.initDataUnsafe.user) draft.name = tg.initDataUnsafe.user.first_name || "";
+  app.innerHTML = modeBar(false) + `<main class="page">
+    <div class="page-head">
+      <button class="round browser-only" data-act="go" data-to="#book" aria-label="Назад">‹</button>
+      ${ttl("Ваши", "данные", "h1")}
+    </div>
+    <div class="summary"><img src="${m.photo}" alt=""><div><b>${esc(dateFull(pick.date))}, ${pick.time}</b><span>${esc(m.short)}, ${esc(m.rank.toLowerCase())} · ${esc(m.price)}</span></div></div>
+    <form id="form" novalidate>
+      <label class="field"><span>Как вас зовут</span><input id="f-name" autocomplete="given-name" value="${esc(draft.name)}" placeholder="Имя"></label>
+      <label class="field"><span>Телефон</span><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" value="${esc(draft.phone)}" placeholder="+7 (___) ___-__-__"></label>
+      <label class="agree"><input id="f-agree" type="checkbox" ${draft.agree ? "checked" : ""}><span>Даю согласие на обработку имени и телефона, чтобы студия могла со мной связаться</span></label>
+      <div class="err" id="f-err"></div>
+      <button class="btn" type="submit">Отправить</button>
+    </form>
+  </main>`;
+  setMainButton(null);
+}
+function submitForm() {
+  draft.name = app.querySelector("#f-name").value.trim();
+  draft.phone = app.querySelector("#f-phone").value.trim();
+  draft.agree = app.querySelector("#f-agree").checked;
+  const err = app.querySelector("#f-err");
+  if (draft.name.length < 2) err.textContent = "Напишите, пожалуйста, имя";
+  else if (!phoneOk(draft.phone)) err.textContent = "Проверьте номер: нужно 10 цифр после +7";
+  else if (!draft.agree) err.textContent = "Без согласия мы не сможем принять заявку";
+  else { err.textContent = ""; showConfirm(); return; }
+  haptic("medium");
+}
+function showConfirm() {
+  const m = MASTER[pick.master];
+  openLayer(`<div class="overlay center" data-act="close-layer"><div class="pop">
+    <h2>Всё верно?</h2>
+    <div class="rows">
+      <div><span>Когда</span><b>${esc(dateFull(pick.date))}, ${pick.time}</b></div>
+      <div><span>Мастер</span><b>${esc(m.short)}, ${esc(m.rank.toLowerCase())}</b></div>
+      <div><span>Цена</span><b>${esc(m.price)}</b></div>
+      <div><span>Имя</span><b>${esc(draft.name)}</b></div>
+      <div><span>Телефон</span><b>${esc(draft.phone)}</b></div>
+    </div>
+    <button class="btn" data-act="send">ОК, записаться</button>
+    <button class="btn soft" data-act="close-layer">Изменить</button>
+  </div></div>`);
+}
+function sendBooking() {
+  closeLayer();
+  // На сервере эта проверка главная: два человека могут нажать на одно окошко одновременно
+  if (activeBooking(pick.master, pick.date, pick.time)) {
+    showNotice("Это окошко только что заняли. Выберите другое время.");
+    pick = null;
+    go("#book");
+    return;
+  }
+  haptic("medium");
+  createBooking({ date: pick.date, time: pick.time, master: pick.master, name: draft.name, phone: draft.phone, status: "pending", source: "client" });
+  pick = null;
+  go("#done");
+}
+
+/* ---------- Клиент: заявка отправлена и мои записи ---------- */
+function renderDone() {
+  const b = myBookings()[0];
+  if (!b) { location.hash = "#"; return; }
+  app.innerHTML = modeBar(false) + `<main class="done">
+    ${ttl("Заявка", "у администратора", "h1")}
+    ${ticket(b)}
+    <p>Это окошко уже закреплено за вами и стало серым для остальных. Подтверждение придёт сообщением от бота.</p>
+    <button class="btn" data-act="go" data-to="#my">Мои записи</button>
+    <button class="btn soft" data-act="go" data-to="#">На главную</button>
+    ${CONFIG.demo ? `<div class="demo-note" style="text-align:left"><b>Посмотрите, что произошло у администратора.</b> Наверху переключитесь на «Администратор», подтвердите заявку, потом вернитесь в «Клиент» и откройте «Мои записи».</div>` : ""}
+  </main>`;
+  setMainButton(null);
+}
+function ticket(b, extra = "") {
+  const m = MASTER[b.master];
+  const [title, cls] = STATUS[b.status];
+  const d = fromKey(b.date);
+  return `<article class="ticket">
+    <div class="ticket-top">
+      <img src="${esc(CONFIG.banner)}" alt="">
+      <div><span class="status ${cls}">${title}</span><b>Маникюр</b><small>${esc(m.price)}, около ${esc(m.timeShort)}</small></div>
+    </div>
+    <div class="ticket-bottom">
+      <div><small>Мастер</small><span class="who"><img src="${m.photo}" alt="">${esc(m.short)}</span></div>
+      <div><small>Дата записи</small><b>${WEEK[d.getDay()][0].toUpperCase() + WEEK[d.getDay()][1]} ${pad(d.getDate())}.${pad(d.getMonth() + 1)}</b><span>${b.time}</span></div>
+    </div>
+    ${extra}
+  </article>`;
+}
+const myBookings = () => db.bookings.filter(b => b.source === "client").sort((a, b) => b.at - a.at);
+
+function renderMy() {
+  const list = myBookings();
+  app.innerHTML = modeBar(false) + `<main class="page">
+    <div class="page-head">
+      <button class="round browser-only" data-act="go" data-to="#" aria-label="Назад">‹</button>
+      ${ttl("Мои", "записи", "h1")}
+    </div>
+    ${list.length ? list.map(myCard).join("") : `<p class="empty-text">Записей пока нет</p><button class="btn" data-act="go" data-to="#book">Выбрать окошко</button>`}
+  </main>`;
+  setMainButton(null);
+}
+function myCard(b) {
+  return ticket(b, `${isActive(b) && !isPast(b.date, b.time) ? `<button class="textlink" data-act="my-cancel" data-id="${b.id}">Отменить запись</button>` : ""}
+    <div class="chat"><div class="bubble"><b class="who">${esc(CONFIG.salon.botName)}</b>${esc(clientMessage(b))}</div></div>`);
+}
+// Клиент вернулся, а администратор уже ответил: показываем, что пришло сообщение
+function tellFresh() {
+  const b = db.bookings.find(x => x.fresh && x.source === "client");
+  if (!b) return;
+  db.bookings.forEach(x => { delete x.fresh; });
+  saveDb();
+  showNotice(b.status === "confirmed" ? "Бот написал: запись подтверждена" : "Бот написал: есть новости по записи");
+}
+
+/* ---------- Администратор ---------- */
+const pendingList = () => db.bookings.filter(b => b.status === "pending").sort((a, b) => a.at - b.at);
+
+function adminFrame(tab, body) {
+  const n = pendingList().length;
+  app.innerHTML = modeBar(true) + `
+    <header class="admin-head">${ttl("Панель", "администратора", "h1")}<p>${esc(CONFIG.salon.name)}, ${esc(dateFull(todayKey()))}</p></header>
+    <nav class="tabs">
+      <button data-act="go" data-to="#admin" class="${tab === "req" ? "on" : ""}">Заявки${n ? `<em>${n}</em>` : ""}</button>
+      <button data-act="go" data-to="#admin/slots" class="${tab === "slots" ? "on" : ""}">Окошки</button>
+      <button data-act="go" data-to="#admin/week" class="${tab === "week" ? "on" : ""}">Расписание</button>
+    </nav>
+    <main class="admin-page">${body}</main>`;
+  setMainButton(null);
+}
+
+function renderRequests() {
+  const pending = pendingList();
+  const handled = db.bookings.filter(b => b.source === "client" && !isActive(b)).concat(db.bookings.filter(b => b.source === "client" && b.status === "confirmed")).sort((a, b) => b.at - a.at).slice(0, 4);
+  const today = todayKey();
+  const soon = db.bookings.filter(b => b.status === "confirmed" && b.date >= today && !isPast(b.date, b.time)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 6);
+  adminFrame("req", `
+    <h2>Сообщения бота</h2>
+    <p>Заявка приходит администратору в Telegram. Кнопки нажимаются прямо под сообщением, открывать приложение не нужно.</p>
+    ${pending.length ? `<div class="chat">${pending.map(b => `<div class="bubble"><b class="who">Бот записи</b><span class="msg-title">${BELL}Новая заявка</span>${esc(adminMessage(b))}<time>${clockText(b.at)}</time></div>
+      <div class="inline">
+        <button data-act="confirm" data-id="${b.id}">Подтвердить</button>
+        <button data-act="reject" data-id="${b.id}">Отклонить</button>
+        <button class="wide" data-act="write" data-id="${b.id}">Написать клиенту</button>
+      </div>`).join("")}</div>` : `<p class="empty-text">Новых заявок нет. Запишитесь со стороны клиента, и она появится здесь.</p>`}
+
+    ${handled.length ? `<h2>Уже ответили</h2><div class="list">${handled.map(b => `<div class="li"><div><b>${esc(b.name)}</b><small>${esc(dateFull(b.date))}, ${b.time}, ${esc(MASTER[b.master].short)}</small></div><div class="r"><small>${STATUS[b.status][0]}</small></div></div>`).join("")}</div>` : ""}
+
+    <h2>Ближайшие записи</h2>
+    <div class="list">${soon.map(b => `<a href="tel:${esc(b.phone.replace(/[^+\d]/g, ""))}"><div><b>${esc(dateFull(b.date))}, ${b.time}</b><small>${esc(MASTER[b.master].short)}</small></div><div class="r"><b>${esc(b.name)}</b><small>${esc(b.phone)}</small></div></a>`).join("")}</div>`);
+}
+
+function renderSlots() {
+  const today = todayKey();
+  if (!adminDate || adminDate < today) adminDate = today;
+  if (!calMonth) setCalMonth(adminDate);
+  const last = addDays(today, CONFIG.adminRange);
+  adminFrame("slots", `
+    <p style="margin:0 0 12px">Выберите день. Нажмите на окошко, чтобы убрать его или записать человека, который позвонил по телефону.</p>
+    ${calendarHtml(adminDate, key => key >= today && key <= last, last)}
+    <h2 class="day-title">${WEEK_FULL[fromKey(adminDate).getDay()][0].toUpperCase() + WEEK_FULL[fromKey(adminDate).getDay()].slice(1)}, ${dateText(adminDate)}</h2>
+    ${CONFIG.masters.map(m => adminBox(m, adminDate)).join("")}
+    <div class="legend"><span><i style="background:var(--ink)"></i>записан</span><span><i style="background:var(--gold)"></i>ждёт ответа</span><span><i style="background:var(--soft)"></i>свободно</span></div>`);
+}
+function adminBox(m, key) {
+  const ov = override(m.id, key);
+  const times = [...new Set([...dayTimes(m.id, key), ...(ov.off ? [] : ov.del.filter(t => templateTimes(m.id, key).includes(t)))])].sort();
+  return `<section class="box">
+    <div class="box-head"><img src="${m.photo}" alt=""><div><b>${esc(m.short)}</b><small>${esc(m.rank)}</small></div>
+      <button class="toggle ${ov.off ? "on" : ""}" data-act="day-off" data-master="${m.id}">${ov.off ? "Выходной" : "Сделать выходным"}</button>
+    </div>
+    <div class="a-slots">
+      ${times.map(t => adminSlot(m, key, t, ov)).join("")}
+      <button class="a-slot add" data-act="add-slot" data-master="${m.id}">+ добавить время</button>
+    </div>
+  </section>`;
+}
+function adminSlot(m, key, t, ov) {
+  const b = activeBooking(m.id, key, t);
+  if (b) return `<button class="a-slot ${b.status === "pending" ? "wait" : "busy"}" data-act="slot-info" data-id="${b.id}">${t}<small>${esc(b.name)}</small></button>`;
+  if (ov.del.includes(t)) return `<button class="a-slot gone" data-act="slot-back" data-master="${m.id}" data-time="${t}">${t}<small>убрано</small></button>`;
+  return `<button class="a-slot" data-act="slot-menu" data-master="${m.id}" data-time="${t}">${t}<small>свободно</small></button>`;
+}
+
+function renderWeek() {
+  const dayOrder = [1, 2, 3, 4, 5, 6, 0];
+  adminFrame("week", `
+    <h2>На сколько вперёд открыта запись</h2>
+    <p>Календарь сдвигается сам: каждое утро появляется новый день. Вручную открывать окошки на следующую неделю или месяц не нужно.</p>
+    <div class="segs">${[[7, "Неделя"], [14, "Две недели"], [30, "Месяц"]].map(([n, t]) => `<button data-act="range" data-n="${n}" class="${db.range === n ? "on" : ""}">${t}</button>`).join("")}</div>
+
+    <h2>График мастеров</h2>
+    <p>Из этого графика окошки появляются на все дни вперёд. Разовые изменения, например больничный или лишнее время в субботу, делаются на вкладке «Окошки».</p>
+    ${CONFIG.masters.map(m => {
+      const s = db.schedules[m.id];
+      const times = genTimes(s);
+      return `<section class="box">
+        <div class="box-head"><img src="${m.photo}" alt=""><div><b>${esc(m.short)}</b><small>${esc(m.rank)}</small></div></div>
+        <div class="weekdays">${dayOrder.map(d => `<button data-act="week-day" data-master="${m.id}" data-day="${d}" class="${s.days.includes(d) ? "on" : ""}">${WEEK[d]}</button>`).join("")}</div>
+        <div class="row3">
+          <label class="field"><span>С</span><input type="time" data-sched="from" data-master="${m.id}" value="${s.from}"></label>
+          <label class="field"><span>До</span><input type="time" data-sched="to" data-master="${m.id}" value="${s.to}"></label>
+          <label class="field"><span>Каждые</span><select data-sched="step" data-master="${m.id}">${[[60, "1 час"], [90, "1,5 часа"], [120, "2 часа"], [150, "2,5 часа"], [180, "3 часа"]].map(([v, t]) => `<option value="${v}" ${s.step === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+        </div>
+        <p class="preview">${times.length ? "Окошки: " + times.join(", ") : "С такими часами окошек не получится"}</p>
+      </section>`;
+    }).join("")}
+    ${CONFIG.demo ? `<button class="reset" data-act="reset">Вернуть пример к началу</button>` : ""}`);
+}
+
+/* ---------- Всплывающие окна администратора ---------- */
+function openLayer(html) {
+  layer.innerHTML = html;
+  syncBackButton();
+}
+function closeLayer() {
+  layer.innerHTML = "";
+  syncBackButton();
+}
+function slotMenu(masterId, time) {
+  const m = MASTER[masterId];
+  openLayer(`<div class="overlay" data-act="close-layer"><div class="pop">
+    <h2>${esc(dateFull(adminDate))}, ${time}</h2>
+    <p>${esc(m.short)}, окошко свободно</p>
+    <button class="btn" data-act="phone-form" data-master="${masterId}" data-time="${time}">Записать клиента</button>
+    <button class="btn soft" data-act="slot-remove" data-master="${masterId}" data-time="${time}">Убрать окошко</button>
+  </div></div>`);
+}
+function phoneForm(masterId, time) {
+  openLayer(`<div class="overlay" data-act="close-layer"><div class="pop">
+    <h2>Запись по телефону</h2>
+    <p>${esc(MASTER[masterId].short)}, ${esc(dateFull(adminDate))}, ${time}. Окошко сразу станет занятым.</p>
+    <label class="field"><span>Имя</span><input id="p-name" placeholder="Имя"></label>
+    <label class="field"><span>Телефон</span><input id="p-phone" type="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"></label>
+    <div class="err" id="p-err" style="margin-top:9px"></div>
+    <button class="btn" data-act="phone-save" data-master="${masterId}" data-time="${time}">Записать</button>
+  </div></div>`);
+}
+function bookingInfo(id) {
+  const b = db.bookings.find(x => x.id === id);
+  if (!b) return;
+  const m = MASTER[b.master];
+  openLayer(`<div class="overlay" data-act="close-layer"><div class="pop">
+    <h2>${esc(dateFull(b.date))}, ${b.time}</h2>
+    <div class="rows">
+      <div><span>Клиент</span><b>${esc(b.name)}</b></div>
+      <div><span>Телефон</span><b>${esc(b.phone)}</b></div>
+      <div><span>Мастер</span><b>${esc(m.short)}</b></div>
+      <div><span>Статус</span><b>${STATUS[b.status][0]}</b></div>
+    </div>
+    ${b.status === "pending" ? `<button class="btn" data-act="confirm" data-id="${b.id}">Подтвердить</button>` : ""}
+    <a class="btn soft" href="tel:${esc(b.phone.replace(/[^+\d]/g, ""))}">Позвонить</a>
+    <button class="btn soft" data-act="admin-cancel" data-id="${b.id}">Отменить запись</button>
+  </div></div>`);
+}
+function addSlotForm(masterId) {
+  openLayer(`<div class="overlay" data-act="close-layer"><div class="pop">
+    <h2>Новое окошко</h2>
+    <p>${esc(MASTER[masterId].short)}, ${esc(dateFull(adminDate))}</p>
+    <label class="field"><span>Время</span><input id="a-time" type="time" value="12:00"></label>
+    <button class="btn" data-act="add-save" data-master="${masterId}">Добавить</button>
+  </div></div>`);
+}
+
+/* ---------- Переходы и кнопки Telegram ---------- */
+let mainAction = null;
+function setMainButton(text, action) {
+  mainAction = action || null;
+  if (heroWatch) { heroWatch.disconnect(); heroWatch = null; }
+  if (!inTelegram) return;
+  if (text) { tg.MainButton.setText(text); tg.MainButton.show(); }
+  else tg.MainButton.hide();
+}
+function go(hash) {
+  haptic();
+  if (location.hash === hash || (hash === "#" && !location.hash)) route();
+  else location.hash = hash;
+}
+const PARENT = { "#book": "#", "#form": "#book", "#my": "#", "#done": "#" };
+function syncBackButton() {
+  if (!inTelegram) return;
+  if (layer.innerHTML || PARENT[location.hash]) tg.BackButton.show();
+  else tg.BackButton.hide();
+}
+function renderCurrent() {
+  const h = location.hash;
+  if (h === "#admin") renderRequests();
+  else if (h === "#admin/slots") renderSlots();
+  else if (h === "#admin/week") renderWeek();
+  else if (h === "#book") renderBook();
+  else if (h === "#form") renderForm();
+  else if (h === "#done") renderDone();
+  else if (h === "#my") renderMy();
+  else renderHome();
+}
+function route() {
+  closeLayer();
+  calMonth = null;
+  renderCurrent();
+  syncBackButton();
+  if (!location.hash.startsWith("#admin") && location.hash !== "#done") tellFresh();
+  scrollTo(0, 0);
+}
+
+/* ---------- Нажатия ---------- */
+const ACTIONS = {
+  go: el => go(el.dataset.to),
+  "toggle-master": el => {
+    openMaster = openMaster === el.dataset.id ? null : el.dataset.id;
+    haptic();
+    app.querySelectorAll(".crew-card").forEach(card => { const on = card.dataset.id === openMaster; card.classList.toggle("on", on); card.setAttribute("aria-expanded", on); });
+    const box = app.querySelector("#crew-detail");
+    box.innerHTML = openMaster ? masterDetail(MASTER[openMaster]) : "";
+    if (openMaster) box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  },
+  tile: el => { haptic(); openPrice(el.dataset.id); },
+  "close-price": () => closePrice(),
+  photo: el => openLayer(`<div class="lightbox" data-act="close-layer"><img src="${el.dataset.src}" alt=""></div>`),
+  month: el => {
+    const d = new Date(calMonth.y, calMonth.m + Number(el.dataset.dir), 1);
+    calMonth = { y: d.getFullYear(), m: d.getMonth() };
+    haptic();
+    renderCurrent();
+  },
+  "pick-day": el => {
+    haptic();
+    if (location.hash === "#admin/slots") adminDate = el.dataset.key;
+    else selDate = el.dataset.key;
+    renderCurrent();
+  },
+  "pick-slot": el => {
+    if (el.dataset.date) selDate = el.dataset.date;
+    pick = { date: selDate, time: el.dataset.time, master: el.dataset.master };
+    go("#form");
+  },
+  "close-layer": (el, e) => { if (e.target === el || el.tagName === "BUTTON" || el.classList.contains("lightbox")) closeLayer(); },
+  send: () => sendBooking(),
+  "my-cancel": el => {
+    setStatus(Number(el.dataset.id), "cancelled");
+    delete db.bookings.find(b => b.id === Number(el.dataset.id)).fresh;
+    saveDb();
+    showNotice("Запись отменена, окошко снова свободно");
+    renderCurrent();
+  },
+  confirm: el => {
+    haptic("medium");
+    const b = setStatus(Number(el.dataset.id), "confirmed");
+    closeLayer();
+    showNotice(b.name + " получит сообщение, что запись подтверждена");
+    renderCurrent();
+  },
+  reject: el => {
+    haptic("medium");
+    const b = setStatus(Number(el.dataset.id), "rejected");
+    showNotice("Окошко снова свободно. " + b.name + " получит сообщение");
+    renderCurrent();
+  },
+  write: el => {
+    const b = db.bookings.find(x => x.id === Number(el.dataset.id));
+    showNotice("В настоящем боте откроется чат с клиентом: " + (b ? b.name : ""));
+  },
+  "slot-info": el => bookingInfo(Number(el.dataset.id)),
+  "slot-menu": el => slotMenu(el.dataset.master, el.dataset.time),
+  "slot-back": el => {
+    const ov = override(el.dataset.master, adminDate, true);
+    ov.del = ov.del.filter(t => t !== el.dataset.time);
+    saveDb();
+    renderCurrent();
+  },
+  "slot-remove": el => {
+    const ov = override(el.dataset.master, adminDate, true);
+    const t = el.dataset.time;
+    if (ov.add.includes(t)) ov.add = ov.add.filter(x => x !== t);
+    if (templateTimes(el.dataset.master, adminDate).includes(t)) ov.del.push(t);
+    saveDb();
+    closeLayer();
+    renderCurrent();
+  },
+  "phone-form": el => phoneForm(el.dataset.master, el.dataset.time),
+  "phone-save": el => {
+    const name = document.getElementById("p-name").value.trim();
+    const phone = document.getElementById("p-phone").value.trim();
+    if (name.length < 2 || !phoneOk(phone)) { document.getElementById("p-err").textContent = "Проверьте имя и телефон"; return; }
+    createBooking({ date: adminDate, time: el.dataset.time, master: el.dataset.master, name, phone, status: "confirmed", source: "admin" });
+    closeLayer();
+    renderCurrent();
+  },
+  "admin-cancel": el => {
+    const b = db.bookings.find(x => x.id === Number(el.dataset.id));
+    setStatus(b.id, "cancelled");
+    closeLayer();
+    showNotice("Запись отменена, окошко снова свободно");
+    renderCurrent();
+  },
+  "add-slot": el => addSlotForm(el.dataset.master),
+  "add-save": el => {
+    const t = document.getElementById("a-time").value;
+    if (!t) return;
+    const master = el.dataset.master;
+    const ov = override(master, adminDate, true);
+    if (dayTimes(master, adminDate).includes(t)) { showNotice("Такое время уже есть"); return; }
+    ov.del = ov.del.filter(x => x !== t);
+    if (!templateTimes(master, adminDate).includes(t)) ov.add.push(t);
+    saveDb();
+    closeLayer();
+    renderCurrent();
+  },
+  "day-off": el => {
+    const master = el.dataset.master;
+    const ov = override(master, adminDate, true);
+    ov.off = !ov.off;
+    saveDb();
+    if (ov.off && dayBookings(master, adminDate).length) showNotice("На этот день уже есть записи, они остались. Новых не будет");
+    renderCurrent();
+  },
+  range: el => {
+    db.range = Number(el.dataset.n);
+    saveDb();
+    renderCurrent();
+  },
+  "week-day": el => {
+    const s = db.schedules[el.dataset.master];
+    const d = Number(el.dataset.day);
+    s.days = s.days.includes(d) ? s.days.filter(x => x !== d) : [...s.days, d];
+    saveDb();
+    renderCurrent();
+  },
+  reset: () => {
+    try { localStorage.removeItem(CONFIG.storageKey); } catch (e) {}
+    db = null;
+    selDate = adminDate = pick = null;
+    draft = { name: "", phone: "", agree: false };
+    loadDb();
+    showNotice("Пример вернулся к началу");
+    go("#");
+  },
+};
+
+function bindEvents() {
+  document.addEventListener("click", e => {
+    const el = e.target.closest("[data-act]");
+    if (el && ACTIONS[el.dataset.act]) ACTIONS[el.dataset.act](el, e);
+  });
+  document.addEventListener("input", e => {
+    if (e.target.id === "f-phone" || e.target.id === "p-phone") e.target.value = formatPhone(e.target.value);
+    if (e.target.id === "f-name") draft.name = e.target.value;
+    if (e.target.id === "f-phone") draft.phone = e.target.value;
+  });
+  document.addEventListener("change", e => {
+    const el = e.target;
+    if (el.id === "f-agree") draft.agree = el.checked;
+    if (!el.dataset.sched) return;
+    const s = db.schedules[el.dataset.master];
+    if (el.dataset.sched === "step") s.step = Number(el.value);
+    else if (el.value) s[el.dataset.sched] = el.value;
+    saveDb();
+    renderCurrent();
+  });
+  app.addEventListener("submit", e => {
+    e.preventDefault();
+    submitForm();
+  });
+  window.addEventListener("hashchange", route);
+  if (inTelegram) {
+    tg.MainButton.onClick(() => { if (mainAction) mainAction(); });
+    tg.BackButton.onClick(() => {
+      if (layer.innerHTML) { closeLayer(); return; }
+      go(PARENT[location.hash] || "#");
+    });
+  }
+}
+
+loadDb();
+bindEvents();
+route();
+</script>
+</body>
+</html>
