@@ -71,6 +71,16 @@
     --script: "Jost", Arial, sans-serif; --script-style: italic; --script-weight: 300;
     --body: "Jost", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
   }
+  /* m — «Молочный миндаль», выбран Инной 21.11.2026: пастель, нюдовая эстетика */
+  :root[data-look="m"] {
+    --bg: #F6F1EA; --card: #FFFCF8; --soft: #E9D6C8; --mark: #B9826B; --ink: #4A3B33; --accent: #B9826B;
+    --sage: #C9D3C1; --sage-soft: #E3E8DD;
+    --gold: #E8C9A0; --text: #3A2E28; --muted: #7A6A60; --line: rgba(74, 59, 51, .14);
+    --taken: #ECE5DD; --taken-text: #ADA096; --on-ink: #FFFCF8;
+    --title: "Cormorant Garamond", Georgia, serif; --title-weight: 500; --t: 1.12;
+    --script: "Cormorant Garamond", Georgia, serif; --script-style: italic; --script-weight: 400;
+    --body: "Manrope", -apple-system, "Segoe UI", Roboto, Arial, sans-serif; --body-weight: 400;
+  }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { background: var(--bg); overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--mark) transparent; }
@@ -80,7 +90,7 @@
   body {
     color: var(--text); background: var(--bg); caret-color: var(--ink);
     font-family: var(--body); font-size: 16px; font-weight: var(--body-weight); line-height: 1.5;
-    min-height: 100dvh; overflow-x: hidden; font-variant-numeric: lining-nums;
+    min-height: 100dvh; overflow-x: clip; font-variant-numeric: lining-nums;  /* clip, а не hidden: иначе не работают «липкие» карточки */
   }
   #app { position: relative; max-width: 480px; min-height: 100dvh; margin: 0 auto; overflow-x: clip; background: var(--bg); }
   button, input, select { font-family: inherit; font-weight: inherit; color: inherit; }
@@ -212,7 +222,9 @@
   .strip-run { display: flex; width: max-content; color: var(--ink); font: var(--title-weight) calc(72px * var(--t))/1 var(--title); text-transform: uppercase; white-space: nowrap; animation: run 28s linear infinite; position: relative; z-index: 1; margin-bottom: -.22em; }
   .strip-run span { padding-right: .5em; }
   @keyframes run { to { transform: translateX(-50%); } }
-  .strip-pic { height: 400px; margin: 0; background: var(--soft) var(--pic) center 78% / cover; filter: saturate(.75); }
+  .strip-pic { height: 460px; margin: 0; background: var(--soft) var(--pic) center 78% / cover; filter: saturate(.75); }
+  [data-look="m"] .strip-pic { background-position: center top; filter: none; }
+  [data-look="m"] .strip-card { margin-top: -88px; }
   .glass { background: rgba(255, 255, 255, .58); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 20px 40px -24px rgba(20, 26, 60, .35); }
   .strip-card { position: relative; margin: -132px 20px 0; padding: 20px; border-radius: 24px; }
   .strip-card b { display: block; color: var(--ink); font: var(--title-weight) calc(24px * var(--t))/1.15 var(--title); }
@@ -502,6 +514,113 @@
     .ticket-top img { width: 88px; height: 104px; }
   }
 
+  /* ===== «Молочный миндаль» (21.11.2026): светлая пастель вместо тёмных блоков ===== */
+  [data-look="m"] .ttl { letter-spacing: .04em; }
+  [data-look="m"] .btn { border-radius: 999px; font-weight: 500; }
+  [data-look="m"] .switch button.on { border-radius: 6px; }
+  /* Шапка светлая: фото растворяется в молоке, текст цвета какао */
+  [data-look="m"] .hero { background: var(--bg); color: var(--ink); min-height: clamp(600px, calc(100svh - 100px), 740px); }
+  [data-look="m"] .hero-pic img { filter: none; margin-top: 0; -webkit-mask-image: linear-gradient(180deg, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, #000 82%, transparent 100%); }
+  [data-look="m"] .hero::before { background: linear-gradient(180deg, transparent 0%, transparent 60%, color-mix(in srgb, var(--bg) 75%, transparent) 76%, var(--bg) 92%); }
+  [data-look="m"] .hero-kind { color: var(--ink); }
+  [data-look="m"] .hero h1 { color: var(--ink); letter-spacing: .02em; font-size: clamp(60px, 17.5vw, 84px); line-height: .9; }
+  [data-look="m"] .hero-script { color: #8A5440; font-weight: 500; font-size: calc(34px * var(--t)); }
+  [data-look="m"] .hero-about { color: var(--text); max-width: 236px; }
+  [data-look="m"] .hero-btn { background: var(--ink); color: var(--on-ink); }
+  /* Текст шапки стоит под фото на чистом молочном фоне: на руках его не прочитать (просьба Инны 21.11) */
+  [data-look="m"] .hero { --ph: min(calc(min(100vw, 480px) * 1.2), 74svh); justify-content: flex-start; min-height: 0; padding-top: calc(var(--ph) - 64px); }
+  [data-look="m"] .hero-pic { bottom: auto; height: var(--ph); background: var(--bg); -webkit-mask-image: linear-gradient(180deg, #000 64%, transparent 98%); mask-image: linear-gradient(180deg, #000 64%, transparent 98%); }
+  [data-look="m"] .hero-pic img { -webkit-mask-image: none; mask-image: none; }
+  [data-look="m"] .hero::before { content: none; }
+  [data-look="m"] .hero-script { margin-top: 12px; }
+  [data-look="m"] .near { box-shadow: 0 24px 48px -24px rgba(74, 59, 51, .28); }
+
+  /* Эффект 01: название выезжает по буквам из-под маски */
+  .hero h1 .ch { display: inline-block; }
+  .intro .hero h1 { animation: none !important; }
+  .intro .hero h1 .ch { animation: letter 1s var(--ease) both; animation-delay: calc(.15s + var(--i) * .06s); }
+  @keyframes letter { from { transform: translateY(105%); opacity: 0; } to { transform: none; opacity: 1; } }
+  .hero h1 .mask { display: inline-block; overflow: hidden; padding: 0 .02em .08em; margin-bottom: -.08em; vertical-align: bottom; }
+  /* Эффект 2.28: вырезанная рука стоит поверх названия. Включается, когда есть CONFIG.photos.heroCut */
+  .hero-cut { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .hero-cut img { width: 100%; height: auto; margin-top: -56px; transform: scale(1.04); transform-origin: 50% 0; will-change: transform; }
+
+  /* Эффект 2.03: круглая надпись вращается вокруг кнопки записи */
+  .orbit { position: absolute; right: 16px; bottom: 60px; z-index: 2; width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; color: var(--ink); background: color-mix(in srgb, var(--card) 70%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .orbit svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 18s linear infinite; }
+  .orbit text { fill: currentColor; font: 500 10px var(--body); text-transform: uppercase; }
+  .orbit b { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--on-ink); font-size: 20px; font-weight: 400; transition: transform .3s var(--ease); }
+  .orbit:active b { transform: scale(.92); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Эффект 08: блоки заходят друг на друга аркой, как форма миндального ногтя */
+  [data-look="m"] .arch-top { position: relative; border-radius: 50% 50% 0 0 / 56px 56px 0 0; }
+  [data-look="m"] .arch-top.lap { margin-top: -56px; z-index: 1; }
+  [data-look="m"] .under { padding-bottom: 104px; }
+
+  /* Услуги на миндальном фоне, плитки светлые, текст какао */
+  [data-look="m"] .sec.deep { background: var(--soft); color: var(--text); }
+  [data-look="m"] .deep .ttl { color: var(--ink); }
+  [data-look="m"] .deep .ttl i { color: var(--accent); }
+  [data-look="m"] .deep .tile, [data-look="m"] .deep .tile.pic { color: var(--ink); background-color: var(--card); }
+  [data-look="m"] .deep .tile small { color: var(--muted); }
+  [data-look="m"] .tile.pic:not(:first-child):not(:last-child)::before { background: linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--card) 80%, transparent) 82%, var(--card) 100%); }
+  [data-look="m"] .tile.pic:first-child::after { height: 100%; -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 96%); mask-image: linear-gradient(180deg, #000 72%, transparent 96%); }
+  [data-look="m"] .tile.pic:first-child, [data-look="m"] .deep .tile.pic.on:first-child, [data-look="m"] .tile.pic:last-child, [data-look="m"] .deep .tile.pic.on:last-child { background: var(--card); }
+  [data-look="m"] .deep .tile.pic.on { color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  [data-look="m"] .deep .tile.pic.on small { color: var(--muted); }
+  [data-look="m"] .tile .almond { background: var(--accent); }
+  [data-look="m"] .tile.pic { background-blend-mode: normal; }
+  [data-look="m"] .arch { filter: sepia(.16) saturate(.85); }   /* старое фото интерьера подтягиваем к палитре, новые уже в тон */
+
+  /* Эффект 03: карточки «Почему» наезжают друг на друга стопкой */
+  .why.stack { gap: 16px; }
+  .why.stack div { position: sticky; top: calc(72px + var(--i) * 14px); min-height: 168px; align-content: start; box-shadow: 0 -12px 32px -20px rgba(74, 59, 51, .3); }
+  .why.stack div em { justify-self: end; margin-top: -28px; color: var(--accent); font: italic 400 calc(40px * var(--t))/1 var(--script); }
+  [data-look="m"] .why.stack div:nth-child(2) { background: var(--sage-soft); }
+  [data-look="m"] .why.stack div:nth-child(3) { background: var(--soft); }
+
+  /* Эффект 2.10: до и после, ползунок делит фото */
+  .ba { position: relative; overflow: hidden; aspect-ratio: 800 / 559; border-radius: 24px; background: var(--soft); touch-action: pan-y; user-select: none; }
+  .ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .ba .before { clip-path: inset(0 calc(100% - var(--x, 50%)) 0 0); }
+  .ba.temp .before { filter: grayscale(.85) brightness(1.06) contrast(.85); }
+  .ba-line { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 2px; margin-left: -1px; background: var(--card); pointer-events: none; }
+  .ba-line b { position: absolute; top: 50%; left: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; display: grid; place-items: center; background: var(--card); color: var(--ink); font-size: 16px; font-weight: 400; box-shadow: 0 8px 24px -8px rgba(74, 59, 51, .4); }
+  .ba-tag { position: absolute; bottom: 16px; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, var(--card) 82%, transparent); color: var(--ink); font-size: 12px; pointer-events: none; }
+  .ba-tag.l { left: 16px; } .ba-tag.r { right: 16px; }
+  .ba input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+  .ba-note { margin-top: 12px; color: var(--muted); font-size: 14px; text-align: center; }
+
+  /* Галерея работ: лента, листается пальцем */
+  .gal { display: flex; gap: 12px; margin: 0 -20px; padding: 0 20px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 20px; scrollbar-width: none; }
+  .gal::-webkit-scrollbar { display: none; }
+  .gal::after { content: ""; flex: 0 0 8px; }
+  .gal figure { flex: 0 0 62%; scroll-snap-align: start; }
+  .gal button { display: block; width: 100%; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 999px 999px 16px 16px; background: var(--soft); }
+  .gal img { width: 100%; height: 100%; object-fit: cover; }
+  .gal figcaption { margin-top: 8px; color: var(--ink); font: italic 400 calc(20px * var(--t))/1.2 var(--script); }
+  .gal figcaption small { display: block; color: var(--muted); font: 400 13px/1.4 var(--body); }
+
+  /* Мастера и отзывы в пастели */
+  [data-look="m"] .sec.rose { background: var(--sage-soft); }
+  [data-look="m"] .sec.photo { color: var(--text); background: var(--soft); }
+  [data-look="m"] .sec.photo::before { filter: blur(6px) sepia(.3) saturate(.6); }
+  [data-look="m"] .sec.photo::after { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 55%, transparent), color-mix(in srgb, var(--soft) 72%, transparent)); }
+  [data-look="m"] .photo .ttl { color: var(--ink); }
+  [data-look="m"] .photo .ttl i { color: var(--accent); }
+  [data-look="m"] .photo .review { color: var(--text); background: rgba(255, 252, 248, .62); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7); }
+  [data-look="m"] .photo .review cite { color: var(--ink); }
+  [data-look="m"] .glass { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6), 0 20px 40px -24px rgba(74, 59, 51, .35); }
+  [data-look="m"] .contacts { box-shadow: 0 24px 48px -24px rgba(74, 59, 51, .3); }
+  [data-look="m"] .foot { color: rgba(255, 252, 248, .78); }
+  [data-look="m"] .foot b { text-transform: none; color: rgba(255, 252, 248, .12); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orbit svg { animation: none; }
+    .why.stack div { position: static; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
     .reveal .sec, .reveal .foot { opacity: 1; transform: none; }
@@ -519,43 +638,47 @@
 /* ---------- Всё содержимое меняем здесь ---------- */
 const CONFIG = {
   demo: true,                          // true — вверху переключатель «Клиент / Администратор», данные живут в этом браузере
-  look: "a",                         // стиль: "0" пудра, "a" синяя глазурь, "b" баклажан, "c" глина и апельсин, "d" розовый и луг. Сравнить все: looks.html
+  look: "m",                      // стиль: "0" пудра, "a" синяя глазурь, "b" баклажан, "c" глина и апельсин, "d" розовый и луг. Сравнить все: looks.html
   storageKey: "salon_demo_v1",
   salon: {
     name: "Миндаль",
     kind: "Студия маникюра на Садовой",
     script: "маникюр без спешки",
     about: "В маленькой студии работают два мастера. Свободное окошко можно выбрать прямо здесь, звонить никуда не нужно.",
-    address: "ул. Садовая, 15, второй этаж",
-    way: "Вход со двора, домофон 15",
+    address: "ул. Садовая, 15",
+    way: "Вход со двора, деревянная дверь у оливы",
     hours: "Каждый день с 8:00 до 20:00",
     phone: "+7 (900) 000-00-00",
     botName: "Студия Миндаль",
   },
   photos: {                            // фото с Unsplash, авторы в img/источники фото.txt
-    hero: "img/hands-up.webp",         // шапка: Инна выбрала 10.11.2026
-    heroBg: "#B6BCC6",                 // цвет фона самого фото, в него фото растворяется снизу
-    strip: "img/hand-cloth.webp",      // полоса с бегущей строкой
-    reviews: "img/hand-sky.webp",      // размытый фон под отзывами
+    hero: "img/n-hero.webp",         // шапка: Инна выбрала 10.11.2026
+    heroBg: "#DACAB9",                 // цвет фона самого фото, в него фото растворяется снизу
+    heroCut: "",                       // та же рука без фона (PNG/WebP с прозрачностью): встаёт поверх названия, эффект «текст за рукой»
+    strip: "img/n-strip.webp",      // полоса с бегущей строкой
+    reviews: "img/n-reviews.webp",      // размытый фон под отзывами
   },
   banner: "img/hero.webp",             // интерьер: арка в «Почему» и карточка записи
-  studio: "img/studio.webp",
+  studio: "img/n-studio.webp",
+  // До и после: одна и та же рука, снятая одинаково. Пока новых фото нет, стоит временная заглушка (temp: true обесцвечивает «до»)
+  beforeAfter: { before: "img/n-before.webp", after: "img/n-after.webp", note: "Покрытие «молочный нюд», мастер Дарья" },
+  orbit: "запись онлайн · без звонков · ",
   strip: { run: "маникюр без спешки", title: "Свободные окошки видно сразу", text: "Выберите день и время, а администратор подтвердит запись сообщением." },
   services: [
-    { id: "cover", title: "Покрытие", from: "от 2 200 ₽", photo: "img/tile-cover.webp", items: [
+    { id: "cover", title: "Покрытие", from: "от 2 200 ₽", photo: "img/n-tile-cover.webp", items: [
       { title: "Однотонное покрытие", text: "Снимаем старое, приводим в порядок кутикулу и покрываем гель-лаком.", price: "2 200 ₽" },
       { title: "Покрытие с укреплением", text: "Для тонких ногтей, которые ломаются и слоятся.", price: "2 600 ₽" },
       { title: "Кошачий глаз", text: "Глубокий цвет с полоской света, которая двигается вместе с рукой.", price: "2 900 ₽" },
     ] },
-    { id: "french", title: "Френч", from: "от 2 500 ₽", photo: "img/tile-french.webp", items: [
+    { id: "french", title: "Френч", from: "от 2 500 ₽", photo: "img/n-tile-french.webp", items: [
       { title: "Классический френч", text: "Тонкая белая линия по краю на молочной основе.", price: "2 500 ₽" },
       { title: "Френч с тонкой линией", text: "Линии рисует мастер от руки, можно принести свою картинку.", price: "3 000 ₽" },
     ] },
-    { id: "nails", title: "Наращивание", from: "от 3 500 ₽", photo: "img/tile-nails.webp", items: [
+    { id: "nails", title: "Наращивание", from: "от 3 500 ₽", photo: "img/n-tile-nails.webp", items: [
       { title: "Наращивание", text: "Форму и длину выбираем вместе. Делает Виктория.", price: "3 500 ₽" },
       { title: "Коррекция", text: "Если с прошлого наращивания прошло три-четыре недели.", price: "3 000 ₽" },
     ] },
-    { id: "pedi", title: "Педикюр", from: "от 2 400 ₽", photo: "img/tile-pedi.webp", items: [
+    { id: "pedi", title: "Педикюр", from: "от 2 400 ₽", photo: "img/n-tile-pedi.webp", items: [
       { title: "Педикюр с покрытием", text: "Стопы, ногти и покрытие гель-лаком в одном цвете.", price: "2 800 ₽" },
       { title: "Педикюр без покрытия", text: "Если нужны только ухоженные стопы и аккуратная форма ногтей.", price: "2 400 ₽" },
     ] },
@@ -567,14 +690,14 @@ const CONFIG = {
   ],
   masters: [
     {
-      id: "daria", name: "Дарья Соколова", short: "Дарья", rank: "Мастер", photo: "img/daria.webp",
+      id: "daria", name: "Дарья Соколова", short: "Дарья", rank: "Мастер", photo: "img/n-daria.webp",
       years: "3 года", time: "2 часа", timeShort: "2 ч", price: "от 2 200 ₽",
       about: "К Дарье приходят за аккуратным однотонным покрытием, френчем и укреплением. Она никуда не торопится и подскажет оттенок, если вы застыли перед палитрой.",
       can: "Покрытие, френч, укрепление, педикюр. От 2 200 ₽, около 2 часов.",
       schedule: { days: [1, 2, 3, 4, 5, 6], from: "08:00", to: "20:00", step: 120 },
     },
     {
-      id: "viktoria", name: "Виктория Белова", short: "Виктория", rank: "Топ-мастер", top: true, photo: "img/viktoria.webp",
+      id: "viktoria", name: "Виктория Белова", short: "Виктория", rank: "Топ-мастер", top: true, photo: "img/n-viktoria.webp",
       years: "9 лет", time: "1,5 часа", timeShort: "1,5 ч", price: "от 3 500 ₽",
       about: "Виктория обучает мастеров и берёт сложные работы: наращивание, тонкие линии от руки, ремонт после неудачного маникюра.",
       can: "Всё то же, плюс наращивание и ремонт. От 3 500 ₽, около 1,5 часа.",
@@ -582,12 +705,12 @@ const CONFIG = {
     },
   ],
   works: [
-    { src: "img/d1.webp", master: "daria", title: "Молочный нюд" },
-    { src: "img/d2.webp", master: "daria", title: "Френч" },
-    { src: "img/d3.webp", master: "daria", title: "Пыльная роза" },
-    { src: "img/d4.webp", master: "daria", title: "Вишня" },
-    { src: "img/v1.webp", master: "viktoria", title: "Тонкие линии" },
-    { src: "img/v3.webp", master: "viktoria", title: "Кошачий глаз" },
+    { src: "img/n-w1.webp", master: "daria", title: "Молочный нюд" },
+    { src: "img/n-w2.webp", master: "daria", title: "Френч" },
+    { src: "img/n-w3.webp", master: "daria", title: "Пыльная роза" },
+    { src: "img/n-w4.webp", master: "daria", title: "Вишня" },
+    { src: "img/n-w5.webp", master: "viktoria", title: "Тонкие линии" },
+    { src: "img/n-w6.webp", master: "viktoria", title: "Кошачий глаз" },
   ],
   reviews: [
     { text: "Хожу к Дарье уже полгода. Покрытие спокойно держится три недели, ни одного скола, хотя я постоянно мою посуду без перчаток.", name: "Ольга" },
@@ -615,6 +738,7 @@ const FONTS = {
   b: "Noto+Serif+Display:ital,wght@0,300;1,300&family=Commissioner:wght@400;500;600",
   c: "Unbounded:wght@300;400&family=Geologica:wght@400;500;600",
   d: "Prata&family=Jost:ital,wght@0,400;0,500;0,600;1,300",
+  m: "Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Manrope:wght@400;500;600",
 };
 const LOOK = (() => {
   const asked = new URLSearchParams(location.search).get("look");
@@ -814,8 +938,10 @@ const STATUS = { pending: ["Ждёт подтверждения", ""], confirmed
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>';
 
 /* ---------- Переключатель для показа ---------- */
+// Переключатель виден только по ссылке с ?demo (или ?admin): на обычной ссылке сайт выглядит как настоящий, без пометок «пример»
+const SHOW_SWITCH = CONFIG.demo && /[?&](demo|admin)/.test(location.search);
 function modeBar(admin) {
-  if (!CONFIG.demo) return "";
+  if (!SHOW_SWITCH) return "";
   return `<div class="modebar"><small>Пример</small><div class="switch">
     <button data-act="go" data-to="#" class="${admin ? "" : "on"}">Клиент</button>
     <button data-act="go" data-to="#admin" class="${admin ? "on" : ""}">Администратор</button>
@@ -833,16 +959,18 @@ function renderHome() {
       <header class="hero">
         <div class="hero-pic" style="--hero-bg:${esc(CONFIG.photos.heroBg)}"><img src="${esc(CONFIG.photos.hero)}" alt=""></div>
         <p class="hero-kind"><span>${esc(s.kind)}</span></p>
-        <h1>${esc(s.name)}</h1>
+        ${CONFIG.photos.heroCut ? `<div class="hero-cut" aria-hidden="true"><img src="${esc(CONFIG.photos.heroCut)}" alt=""></div>` : ""}
+        <h1 aria-label="${esc(s.name)}"><span class="mask" aria-hidden="true">${[...s.name].map((c, i) => `<span class="ch" style="--i:${i}">${esc(c)}</span>`).join("")}</span></h1>
         <p class="hero-script">${esc(s.script)}</p>
         <p class="hero-about">${esc(s.about)}</p>
         <button class="btn hero-btn" data-act="go" data-to="#book">Записаться <span aria-hidden="true">→</span></button>
+        ${orbitHtml()}
       </header>
       ${nearHtml()}
       <main>
         ${mine ? `<button class="next" data-act="go" data-to="#my"><img src="${MASTER[mine.master].photo}" alt=""><div><b>${esc(dateFull(mine.date))}, ${mine.time}</b><span>${mine.status === "confirmed" ? "Запись подтверждена" : "Ждём подтверждения администратора"}. Мои записи ›</span></div></button>` : ""}
 
-        <section class="sec deep">
+        <section class="sec deep arch-top">
           ${ttl("Услуги", "и цены")}
           <div class="tiles">
             ${CONFIG.services.map((v, i) => `
@@ -856,8 +984,10 @@ function renderHome() {
         <section class="sec">
           ${ttl("Почему", "выбирают нас")}
           <img class="arch" src="${esc(CONFIG.banner)}" alt="Рабочее место в студии" loading="lazy">
-          <div class="why">${CONFIG.why.map(w => `<div>${ALMOND}<b>${esc(w.title)}</b><p>${esc(w.text)}</p></div>`).join("")}</div>
+          <div class="why stack">${CONFIG.why.map((w, i) => `<div style="--i:${i}">${ALMOND}<em aria-hidden="true">0${i + 1}</em><b>${esc(w.title)}</b><p>${esc(w.text)}</p></div>`).join("")}</div>
         </section>
+
+        ${baHtml()}
 
         <section class="strip" aria-label="${esc(CONFIG.strip.title)}">
           <p class="strip-run" aria-hidden="true">${Array(4).fill(`<span>${esc(CONFIG.strip.run)}</span>`).join("")}</p>
@@ -869,15 +999,20 @@ function renderHome() {
           </div>
         </section>
 
-        <section class="sec rose">
+        <section class="sec rose arch-top under">
           ${ttl("Мастера", "студии")}
           <div class="crew">${CONFIG.masters.map(crewCard).join("")}</div>
           <div class="crew-detail" id="crew-detail">${openMaster ? masterDetail(MASTER[openMaster]) : ""}</div>
         </section>
 
-        <section class="sec photo" style="--pic:url('${esc(CONFIG.photos.reviews)}')">
+        <section class="sec photo arch-top lap" style="--pic:url('${esc(CONFIG.photos.reviews)}')">
           ${ttl("Отзывы", "наших гостей")}
           <div class="reviews">${CONFIG.reviews.map(r => `<blockquote class="review"><p>${esc(r.text)}</p><cite>${esc(r.name)}</cite></blockquote>`).join("")}</div>
+        </section>
+
+        <section class="sec gallery">
+          ${ttl("Работы", "мастеров")}
+          <div class="gal">${CONFIG.works.map(w => `<figure><button data-act="photo" data-src="${esc(w.src)}" aria-label="${esc(w.title)}"><img src="${esc(w.src)}" alt="" loading="lazy"></button><figcaption>${esc(w.title)}<small>${esc(MASTER[w.master].short)}</small></figcaption></figure>`).join("")}</div>
         </section>
 
         <section class="sec faq">
@@ -894,10 +1029,9 @@ function renderHome() {
           </div>
         </section>
       </main>
-      <footer class="foot">
+      <footer class="foot arch-top">
         <span>${esc(s.script)}</span>
         <p>${esc(s.address)}<br>${esc(s.hours)}<br><a href="tel:${esc(s.phone.replace(/[^+\d]/g, ""))}">${esc(s.phone)}</a></p>
-        ${CONFIG.demo ? `<small>${esc(CONFIG.demoNote)}</small>` : ""}
         <b aria-hidden="true">${esc(s.name)}</b>
       </footer>
     </div>
@@ -908,6 +1042,29 @@ function renderHome() {
   revealSections();
   heroDrift();
 }
+// Круглая надпись вокруг кнопки записи (эффект 2.03)
+function orbitHtml() {
+  const t = CONFIG.orbit;
+  return `<button class="orbit" data-act="go" data-to="#book" aria-label="Записаться онлайн">
+    <svg viewBox="0 0 112 112" aria-hidden="true"><defs><path id="orbit-path" d="M56,56 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs><text><textPath href="#orbit-path" textLength="270" lengthAdjust="spacing">${esc(t)}</textPath></text></svg>
+    <b aria-hidden="true">↗</b></button>`;
+}
+// До и после (эффект 2.10): ползунок двигается пальцем или мышью
+function baHtml() {
+  const b = CONFIG.beforeAfter;
+  if (!b) return "";
+  return `<section class="sec ba-sec">
+    ${ttl("До и после", "один визит")}
+    <div class="ba${b.temp ? " temp" : ""}" style="--x:50%">
+      <img class="after" src="${esc(b.after)}" alt="После" loading="lazy">
+      <img class="before" src="${esc(b.before)}" alt="До" loading="lazy">
+      <span class="ba-tag l">до</span><span class="ba-tag r">после</span>
+      <span class="ba-line" aria-hidden="true"><b>↔</b></span>
+      <input type="range" min="0" max="100" value="50" aria-label="Сравнить до и после" oninput="this.parentNode.style.setProperty('--x', this.value + '%')">
+    </div>
+    ${b.note ? `<p class="ba-note">${esc(b.note)}</p>` : ""}
+  </section>`;
+}
 // Шапка при прокрутке: название уплывает влево, фото чуть отстаёт
 const calm = matchMedia("(prefers-reduced-motion: reduce)");
 function heroDrift() {
@@ -916,6 +1073,8 @@ function heroDrift() {
   const y = Math.min(window.scrollY, 900);
   name.style.transform = `translateX(${(-y * .4).toFixed(1)}px)`;
   pic.style.transform = `translateY(${(y * .3).toFixed(1)}px) scale(1.04)`;
+  const cut = app.querySelector(".hero-cut img");
+  if (cut) cut.style.transform = pic.style.transform;
 }
 let driftQueued = false;
 window.addEventListener("scroll", () => {
@@ -1186,7 +1345,7 @@ function renderDone() {
     <p>Это окошко уже закреплено за вами и стало серым для остальных. Подтверждение придёт сообщением от бота.</p>
     <button class="btn" data-act="go" data-to="#my">Мои записи</button>
     <button class="btn soft" data-act="go" data-to="#">На главную</button>
-    ${CONFIG.demo ? `<div class="demo-note" style="text-align:left"><b>Посмотрите, что произошло у администратора.</b> Наверху переключитесь на «Администратор», подтвердите заявку, потом вернитесь в «Клиент» и откройте «Мои записи».</div>` : ""}
+    ${SHOW_SWITCH ? `<div class="demo-note" style="text-align:left"><b>Посмотрите, что произошло у администратора.</b> Наверху переключитесь на «Администратор», подтвердите заявку, потом вернитесь в «Клиент» и откройте «Мои записи».</div>` : ""}
   </main>`;
   setMainButton(null);
 }
