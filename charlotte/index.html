@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Шарлотта — воздушные шары и оформление праздников</title>
+<meta name="description" content="Шары с надписью, фотозоны, взрыв шаров на свадьбу, выписка из роддома и букеты из шаров. Любое цветовое решение и эскиз оформления до предоплаты. Доставка по городу.">
+<meta name="theme-color" content="#110d0b">
+<!-- ШАБЛОН «Шарлотта» (демо-бренд, выдуманный). Запрет индексации: для показа и видео. Для настоящего клиента УДАЛИТЬ (и Disallow в robots.txt) -->
+<meta name="robots" content="noindex, nofollow">
+<!-- Адрес демо на GitHub Pages. Для клиента заменить на его домен во всех местах: canonical, og:url, og:image, schema, robots.txt, sitemap.xml. Город вписать в title, description, тексты услуг и schema -->
+<link rel="canonical" href="https://innagor77.github.io/demo/charlotte/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Шарлотта">
+<meta property="og:title" content="Шарлотта — воздушные шары и оформление праздников">
+<meta property="og:description" content="Шары с надписью, фотозоны, взрыв шаров на свадьбу, выписка из роддома и букеты из шаров. Любое цветовое решение и эскиз оформления до предоплаты. Доставка по городу.">
+<meta property="og:url" content="https://innagor77.github.io/demo/charlotte/">
+<meta property="og:image" content="https://innagor77.github.io/demo/charlotte/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Шарлотта — воздушные шары и оформление праздников">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Шарлотта",
+  "description": "Воздушные шары и оформление праздников: шары с надписью, фотозоны, взрыв шаров, выписка из роддома, букеты из шаров.",
+  "url": "https://innagor77.github.io/demo/charlotte/",
+  "image": "https://innagor77.github.io/demo/charlotte/og.jpg",
+  "telephone": "+79000000000",
+  "address": [
+    { "@type": "PostalAddress", "streetAddress": "ул. Садовая, 12", "addressCountry": "RU" }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Great+Vibes&family=Golos+Text:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="#top">Шарлотта</a>
+  <nav class="nav-links" aria-label="Разделы">
+    <a href="#services">Услуги</a>
+    <a href="#works">Работы</a>
+    <a href="#prices">Цены</a>
+    <a href="#contacts">Контакты</a>
+  </nav>
+  <a class="btn btn-small" href="#" data-order="шары">Заказать</a>
+</header>
+
+<main id="top" class="stack">
+  <div class="sheet">
+  <!-- 1. Первый экран: вечерний свет, золотые огни, чёрные и золотые 3D-шары (демо-бренд «Шарлотта») -->
+  <section class="hero" data-hero>
+    <div class="night" aria-hidden="true"><div class="glow"></div><div class="bokeh"></div></div>
+    <canvas class="hero-canvas" aria-hidden="true"></canvas>
+    <div class="hero-text">
+      <h1>Воздушные шары и&nbsp;оформление <em>праздников</em></h1>
+      <p class="lead">Шары с надписью, фотозоны, взрыв шаров на свадьбу и встреча из роддома. Подберём палитру под ваш праздник и покажем эскиз до предоплаты.</p>
+      <div class="actions">
+        <a class="btn" href="#" data-order="шары">Заказать в Telegram</a>
+        <a class="btn btn-line" href="tel:+79000000000">Позвонить</a>
+      </div>
+    </div>
+    <p class="hero-hint" aria-hidden="true">Нажмите на шар</p>
+  </section>
+
+  <!-- 2. УТП «Ваши цвета, а не каталог» цифрами. Обещания демо-бренда: под заказчика сверить, что он правда так делает -->
+  <section class="stats" aria-label="Почему «Шарлотта»">
+    <div class="stat" data-reveal><b data-count="24">24</b><span>ч</span><p>и эскиз в вашей палитре готов, до предоплаты</p></div>
+    <div class="stat" data-reveal><b data-count="60">60</b><span>+</span><p>оттенков шаров: любое цветовое решение под зал, платье или торт</p></div>
+    <div class="stat" data-reveal><b data-count="7">7</b><p>дней летают шары с обработкой Hi‑Float, а не один вечер</p></div>
+    <div class="stat" data-reveal><b data-count="0">0</b><span>₽</span><p>за замену шара, если сдулся в первые сутки</p></div>
+  </section>
+
+  <!-- 3. Бегущая строка -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Шары с надписью</span><i>✦</i><span>Фотозоны</span><i>✦</i><span>Взрыв шаров</span><i>✦</i><span>Выписка из роддома</span><i>✦</i><span>Букеты из шаров</span><i>✦</i><span>Свадьбы</span><i>✦</i><span>Игрушка в шаре</span><i>✦</i>
+      <span>Шары с надписью</span><i>✦</i><span>Фотозоны</span><i>✦</i><span>Взрыв шаров</span><i>✦</i><span>Выписка из роддома</span><i>✦</i><span>Букеты из шаров</span><i>✦</i><span>Свадьбы</span><i>✦</i><span>Игрушка в шаре</span><i>✦</i>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="sheet sheet-light">
+  <!-- 4. Услуги: меню с номерами, раскрывается с фото -->
+  <section class="services band-light" id="services">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Что мы делаем</p>
+      <h2>Выберите <em>повод</em>, остальное придумаем мы</h2>
+    </div>
+    <ol class="svc-list">
+      <li class="svc" data-cat="wedding">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">01</span><span class="svc-title">Свадьбы</span><span class="svc-sub">президиум, арки из цветов, свечи</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Оформление свадьбы: президиум, арка из живых и искусственных цветов, welcome-зона, стол молодых, декор шампанского и бокалов. Под ваш цвет и зал.</p><p class="svc-price">от 15 000 ₽</p><a class="btn" href="#" data-order="оформление свадьбы">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="photozone">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">02</span><span class="svc-title">Фотозоны</span><span class="svc-sub">динозавры, Барби, неон, пайетки</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Фотозоны из шаров, тематические и со светом: от динозавров для сына до нежной классики на юбилей. Для дома, кафе и большого зала.</p><p class="svc-price">от 6 000 ₽</p><a class="btn" href="#" data-order="фотозону">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="boom">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">03</span><span class="svc-title">Взрыв шаров</span><span class="svc-sub">сотни шаров падают на танец молодых</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Взрыв шаров на свадьбу: в момент, который вы выберете, сверху падают сотни шаров. Первый танец, вынос торта или финал вечера. Гости достают телефоны.</p><p class="svc-price">от 5 000 ₽</p><a class="btn" href="#" data-order="взрыв шаров">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="vypiska">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">04</span><span class="svc-title">Выписка из роддома</span><span class="svc-sub">именные шары «Welcome home»</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Шары на выписку из роддома: шары с именем малыша, встреча у роддома и оформление дома к приезду. Нежно, как в первый день.</p><p class="svc-price">от 3 500 ₽</p><a class="btn" href="#" data-order="шары на выписку">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="birthday">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">05</span><span class="svc-title">Шары с надписью</span><span class="svc-sub">цифры, фонтаны, именные шары</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Шары с надписью на день рождения: именные шары, цифры и фонтаны из шаров. Любая надпись и цвет, доставим по городу.</p><p class="svc-price">от 450 ₽</p><a class="btn" href="#" data-order="шары с надписью">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="bouquet">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">06</span><span class="svc-title">Букеты из шаров</span><span class="svc-sub">цветы, которые не вянут</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Букеты из шаров: ромашки, тюльпаны и розы из шаров, букеты в коробке и с надписью. Подарок, который удивит.</p><p class="svc-price">от 1 500 ₽</p><a class="btn" href="#" data-order="букет из шаров">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="men">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">07</span><span class="svc-title">Для мужчин</span><span class="svc-sub">чёрный, золото, хром</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Шары для мужчин: сдержанные композиции на юбилей и день рождения. Чёрный, золото, серебро, цифры из фольги.</p><p class="svc-price">от 2 500 ₽</p><a class="btn" href="#" data-order="композицию для мужчины">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="surprise">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">08</span><span class="svc-title">Игрушка в шаре</span><span class="svc-sub">МаниБокс и сюрпризы</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Игрушка в шаре: игрушка или подарок внутри прозрачного шара, МаниБокс с деньгами, коробка, из которой вылетают шары.</p><p class="svc-price">от 1 200 ₽</p><a class="btn" href="#" data-order="игрушку в шаре">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+      <li class="svc" data-cat="opening">
+        <button class="svc-row" aria-expanded="false"><span class="svc-num">09</span><span class="svc-title">Открытия и бизнес</span><span class="svc-sub">гирлянды на вход</span><span class="svc-plus" aria-hidden="true"></span></button>
+        <div class="svc-panel"><div class="svc-inner">
+          <div class="svc-text"><p>Оформление открытия магазина или кафе: арки и гирлянды на вход, чтобы вас заметили с улицы в день открытия.</p><p class="svc-price">от 7 000 ₽</p><a class="btn" href="#" data-order="оформление открытия">Хочу такое</a></div>
+          <div class="strip" data-strip></div>
+        </div></div>
+      </li>
+    </ol>
+  </section>
+
+  </div>
+
+  <div class="sheet">
+  <!-- Эффект 06 «Влёт в картинку»: маленькое фото по скроллу растёт на весь экран, слова разъезжаются -->
+  <section class="flyin" aria-label="Взрыв шаров">
+    <div class="flyin-stick">
+      <div class="flyin-media"><img src="img/boom-2.webp" alt="Разноцветные шары под потолком праздничного зала" loading="lazy" decoding="async"></div>
+      <p class="flyin-word flyin-l" aria-hidden="true">Взрыв</p>
+      <p class="flyin-word flyin-r" aria-hidden="true">шаров</p>
+      <p class="flyin-cap">Сотни шаров в&nbsp;момент, который вы выберете</p>
+    </div>
+  </section>
+
+  <!-- 5. Взрыв шаров -->
+  <section class="boom" id="boom">
+    <div class="boom-media" data-reveal>
+      <img src="img/boom-1.webp" alt="Прозрачные шары с конфетти в вечернем зале" loading="lazy" data-zoom="boom" data-i="0">
+    </div>
+    <div class="boom-text" data-reveal>
+      <p class="eyebrow">Фирменное</p>
+      <h2>Взрыв шаров на&nbsp;<em>танец</em> молодых</h2>
+      <p>Сотни шаров падают сверху в момент, который вы выберете. Самое красивое видео со свадьбы, которое хочется пересматривать.</p>
+      <a class="btn btn-light" href="#" data-order="взрыв шаров">Забронировать дату</a>
+    </div>
+    <div class="boom-rain" aria-hidden="true"></div>
+  </section>
+
+  <!-- 6. Работы: две живые ленты -->
+  <section class="works band-light" id="works">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Работы</p>
+      <h2>Каждый праздник в&nbsp;<em>своём</em> цвете</h2>
+    </div>
+    <div class="reel" data-reel="a"><div class="reel-track"></div></div>
+    <div class="reel reel-back" data-reel="b"><div class="reel-track"></div></div>
+    <a class="link" href="#" target="_blank" rel="noopener">Больше работ в Telegram ↗</a>
+  </section>
+
+  </div>
+
+  <div class="sheet">
+  <!-- 7. Цены -->
+  <section class="prices" id="prices">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Цены</p>
+      <h2>Сколько <em>стоит</em></h2>
+      <p class="muted">Точную сумму назовём, когда узнаем повод, дату и количество шаров.</p>
+    </div>
+    <table class="price-table" data-reveal>
+      <tbody>
+        <tr><th>Шар с надписью</th><td>от 450 ₽</td></tr>
+        <tr><th>Букет из шаров</th><td>от 1 500 ₽</td></tr>
+        <tr><th>Игрушка в шаре</th><td>от 1 200 ₽</td></tr>
+        <tr><th>МаниБокс</th><td>от 2 500 ₽</td></tr>
+        <tr><th>Выписка из роддома</th><td>от 3 500 ₽</td></tr>
+        <tr><th>Фотозона</th><td>от 6 000 ₽</td></tr>
+        <tr><th>Взрыв шаров</th><td>от 5 000 ₽</td></tr>
+        <tr><th>Свадебное оформление</th><td>от 15 000 ₽</td></tr>
+        <tr><th>Доставка по городу</th><td>от 300 ₽</td></tr>
+      </tbody>
+    </table>
+    <p class="demo-note">Цены на демо-сайте примерные.</p>
+  </section>
+
+  <!-- 8. Как заказать -->
+  <section class="steps band-light">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Как заказать</p>
+      <h2>Три <em>шага</em> до праздника</h2>
+    </div>
+    <ol>
+      <li data-reveal><span>01</span><b>Напишите повод и дату</b><p>Можно прислать фото, которое понравилось.</p></li>
+      <li data-reveal><span>02</span><b>Подберём палитру</b><p>Покажем эскиз оформления и назовём цену, до предоплаты.</p></li>
+      <li data-reveal><span>03</span><b>Привезём или заберёте сами</b><p>Доставка по городу или самовывоз из студии.</p></li>
+    </ol>
+    <a class="btn" href="#" data-order="шары" data-reveal>Написать нам</a>
+  </section>
+
+  <!-- 9. Отзывы -->
+  <section class="quotes">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Отзывы</p>
+      <h2>Что <em>говорят</em></h2>
+    </div>
+    <div class="quote-grid">
+      <figure data-reveal><blockquote>«Взрыв шаров на первый танец — гости до сих пор пересматривают видео.»</blockquote><figcaption>Пример отзыва</figcaption></figure>
+      <figure data-reveal><blockquote>«Заказали шары на выписку за день, привезли вовремя и с именем малыша. Спасибо!»</blockquote><figcaption>Пример отзыва</figcaption></figure>
+      <figure data-reveal><blockquote>«Фотозона была главной на юбилее, все фото на её фоне.»</blockquote><figcaption>Пример отзыва</figcaption></figure>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="sheet sheet-light">
+  <!-- 10. Контакты -->
+  <section class="contacts band-light" id="contacts">
+    <div data-reveal>
+      <p class="eyebrow">Контакты</p>
+      <h2>Где нас <em>найти</em></h2>
+      <div class="points">
+        <div class="point"><span>Студия</span><b>ул. Садовая, 12</b><p>вход со двора</p><a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Открыть на Яндекс Картах ↗</a></div>
+      </div>
+      <ul class="contact-list">
+        <li><a href="tel:+79000000000">+7 900 000-00-00</a></li>
+        <li><a href="#" target="_blank" rel="noopener">Telegram</a></li>
+        <li class="muted">Часы работы: уточнить</li>
+      </ul>
+      <a class="btn" href="#" data-order="шары">Заказать шары</a>
+    </div>
+    <figure class="map" data-reveal>
+      <img src="img/studio-1.webp" alt="Прозрачный шар с конфетти в тёплом свете зала" loading="lazy">
+      <figcaption>Заходите подобрать палитру</figcaption>
+    </figure>
+  </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-row">
+    <span>Воздушные шары и оформление праздников</span>
+    <nav class="footer-links" aria-label="Разделы"><a href="#services">Услуги</a><a href="#works">Работы</a><a href="#prices">Цены</a><a href="#contacts">Контакты</a></nav>
+    <span>Демо-версия сайта</span>
+  </div>
+  <!-- Реквизиты владельца: по закону нужны даже у сайта без формы. Заполнить данными Кати перед запуском (ИП ФИО или название, ИНН, ОГРНИП, адрес, почта) -->
+  <p class="footer-legal">Реквизиты владельца: уточнить у заказчика (ИП или название, ИНН, ОГРНИП, адрес, e-mail)</p>
+  <!-- Название крупно во всю ширину, как вывеска над входом: золотые буквы на чёрном -->
+  <div class="footer-mark" aria-hidden="true"><span>Шарлотта</span></div>
+</footer>
+
+<a class="sticky-cta btn" href="#" data-order="шары">Заказать шары</a>
+<div class="hover-preview" aria-hidden="true"><img alt=""></div>
+<div class="lightbox" role="dialog" aria-modal="true" aria-label="Фото работы" hidden>
+  <button class="lb-close" aria-label="Закрыть">×</button>
+  <button class="lb-prev" aria-label="Предыдущее">‹</button>
+  <img alt="">
+  <button class="lb-next" aria-label="Следующее">›</button>
+</div>
+<div class="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
