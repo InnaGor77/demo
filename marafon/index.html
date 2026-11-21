@@ -330,7 +330,38 @@
   .days i { display: block; height: 0; margin-bottom: 4px; border-radius: 8px 8px 4px 4px; background: var(--veg); transition: height 1.1s var(--ease); }
   .res-btns { display: grid; gap: 8px; margin-top: 28px; }
 
+
+  /* ===== Эффекты из каталога (21.11.2026) ===== */
+  /* 01. Заголовок появляется по буквам из-под маски */
+  .split .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+  .split .ch { display: inline-block; transform: translateY(110%); animation: chin .9s var(--ease) forwards; animation-delay: calc(var(--d0, 0s) + var(--i) * 30ms); }
+  @keyframes chin { to { transform: none; } }
+
+  /* 2.03. Круглый бейдж с бегущей по кругу надписью */
+  .gate > .orbit, .orbit { position: absolute; z-index: 2; top: calc(24px + env(safe-area-inset-top)); right: 20px; width: 112px; height: 112px; display: grid; place-items: center; color: #fff; opacity: 0; animation: orbitin 1.2s var(--ease) .6s forwards; }
+  .orbit svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 24s linear infinite; }
+  .orbit text { fill: rgba(255, 255, 255, .9); font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+  .orbit b { font-family: var(--display); font-weight: 300; font-size: 40px; line-height: 1; color: var(--lime); }
+  .orbit::before { content: ""; position: absolute; inset: 26px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes orbitin { from { opacity: 0; transform: scale(.8) rotate(-40deg); } to { opacity: 1; transform: none; } }
+
+  /* 05. Живой фон: на входе фото медленно «дышит», в шапках едет медленнее страницы */
+  .gate .hero-bg { animation: breathe 16s ease-in-out infinite alternate; }
+  @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.08); } }
+  .hero .hero-bg { will-change: transform; }
+
+  /* 21. Плавные переходы между экранами, фото блюда перелетает из карточки на страницу рецепта */
+  ::view-transition-old(root) { animation: vt-out .25s var(--ease) both; }
+  ::view-transition-new(root) { animation: vt-in .5s var(--ease) both; }
+  ::view-transition-group(dish) { animation-duration: .6s; animation-timing-function: var(--ease); }
+  @keyframes vt-out { to { opacity: 0; transform: scale(.97); } }
+  @keyframes vt-in { from { opacity: 0; transform: translateY(28px); } }
+  .dish-img { view-transition-name: dish; }
+  .vt-dish .dish-img { animation: none; }
+
   @media (prefers-reduced-motion: reduce) {
+    .split .ch, .orbit, .orbit svg, .gate .hero-bg { animation: none; opacity: 1; transform: none; }
     .rise, .reveal, .step { animation: none; opacity: 1; transform: none; transition: none; }
     .dish-img, .playing .bars i { animation: none; }
     .meal-pic { transform: none; transition: none; }
@@ -364,13 +395,15 @@ const CONFIG = {
   sampleResult: { stats: [6, 7, 6, 3, 4, 5], days: [50, 33, 83, 67, 100, 83, 100] },
   photoDays: 1,
   title: "Лёгкая неделя",
+  // Надпись, которая бежит по кругу на экране входа. В центре круга число дней
+  badgeText: "без диет · без запретов · без весов · ",
   expertRole: "нутрициолог",
   expertName: "Алёна Берёзова",
   expertPhoto: "img/expert.webp",
   gateText: "Семь дней спокойной еды без подсчёта калорий и запретов. Код доступа приходит в чат участниц перед стартом.",
   curatorLabel: "Написать куратору",
   curatorUrl: "https://t.me/innagorulko",
-  footnote: "Пример для показа. Рекомендации общие и не заменяют консультацию врача. Калории примерные.",
+  footnote: "Рекомендации общие и не заменяют консультацию врача. Калории примерные.",
   waterGoal: 8,
   waterNote: "Нажимайте на стакан, когда выпили. Стакан примерно 250 мл, чай без сахара тоже считаем. Если врач ограничил вам воду, следуйте его рекомендации.",
   supplements: [
@@ -830,21 +863,61 @@ function materialHtml(m) {
   </div>`;
 }
 
+/* ---------- Эффект 01: заголовок по буквам ---------- */
+function splitTitle(text, delay = 0.2) {
+  let i = 0;
+  const words = String(text).split(" ").map(w => `<span class="w">${[...w].map(ch => `<span class="ch" style="--i:${i++}">${esc(ch)}</span>`).join("")}</span>`);
+  return `<span aria-hidden="true">${words.join(" ")}</span>`;
+}
+const h1Split = (text, delay = 0.2) => `<h1 class="split" style="--d0:${delay}s" aria-label="${esc(text)}">${splitTitle(text)}</h1>`;
+
+/* ---------- Эффект 2.03: бейдж с надписью по кругу ---------- */
+function orbitHtml() {
+  if (!CONFIG.badgeText) return "";
+  return `<div class="orbit" aria-hidden="true">
+    <svg viewBox="0 0 120 120"><defs><path id="orbit-path" d="M60,60 m-48,0 a48,48 0 1,1 96,0 a48,48 0 1,1 -96,0"/></defs>
+      <text><textPath href="#orbit-path" textLength="300" lengthAdjust="spacing">${esc(CONFIG.badgeText)}</textPath></text></svg>
+    <b>${TOTAL}</b>
+  </div>`;
+}
+
+/* ---------- Эффект 05: фото в шапке едет медленнее страницы ---------- */
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+let parallaxTick = false;
+addEventListener("scroll", () => {
+  if (parallaxTick || calm()) return;
+  parallaxTick = true;
+  requestAnimationFrame(() => {
+    parallaxTick = false;
+    const bg = app.querySelector(".hero .hero-bg");
+    const y = scrollY;
+    if (bg && y < 700) bg.style.transform = `translate3d(0, ${y * 0.4}px, 0)`;
+  });
+}, { passive: true });
+
+/* ---------- Эффект 21: плавный переход между экранами ---------- */
+let backToDish = "";
+function transition(fn) {
+  if (!document.startViewTransition || calm()) { fn(); return; }
+  const vt = document.startViewTransition(fn);
+  vt.finished.finally(() => document.documentElement.classList.remove("vt-dish"));
+}
+
 /* ---------- Экраны ---------- */
 function renderGate() {
   app.innerHTML = `
     <form class="gate" id="gate" novalidate>
       <div class="hero-bg"></div>
+      ${orbitHtml()}
       <div class="expert gate-expert rise" style="--d:.1s">
         <img src="${CONFIG.expertPhoto}" alt="">
         <div><small>${esc(CONFIG.expertRole)}</small><div class="hand">${esc(CONFIG.expertName)}</div></div>
       </div>
-      <h1 class="rise" style="--d:.2s">${esc(CONFIG.title)}</h1>
-      <p class="rise" style="--d:.3s">${esc(CONFIG.gateText)}</p>
+      ${h1Split(CONFIG.title, .2)}
+      <p class="rise" style="--d:.45s">${esc(CONFIG.gateText)}</p>
       <input class="glass rise" style="--d:.4s" id="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="Введите код доступа" aria-label="Код доступа">
       <button class="btn lime rise" style="--d:.48s" type="submit">Войти в марафон</button>
       <div class="err" id="err" role="alert"></div>
-      ${CONFIG.demo ? `<div class="gate-hint rise" style="--d:.56s">Это пробная версия. Код для входа: <b>${esc(CONFIG.accessCodes[0])}</b></div>` : ""}
     </form>`;
   setMainButton(null);
 }
@@ -940,7 +1013,7 @@ function renderHome() {
       <div class="hero-bg"></div>
       <div class="hero-text">
         <div class="kicker rise" style="--d:.1s">${esc(heroKicker())}</div>
-        <h1 class="rise" style="--d:.2s">${esc(CONFIG.title)}</h1>
+        ${h1Split(CONFIG.title, .2)}
         <div class="expert rise" style="--d:.32s">
           <img src="${CONFIG.expertPhoto}" alt="">
           <div><small>${esc(CONFIG.expertRole)}</small><div class="hand">${esc(CONFIG.expertName)}</div></div>
@@ -961,19 +1034,7 @@ function renderHome() {
         <span class="hand">открываются постепенно</span>
         <div class="mats">${CONFIG.materials.map(materialHtml).join("")}</div>
       </section>
-      ${CONFIG.demo ? `
-      <div class="demo reveal">
-        <b>Пробная версия</b>
-        ${CONFIG.openDays ? `
-        В этом примере открыт первый день, он показывает, как всё устроено. В настоящем марафоне дни открываются по календарю, а в конце участница видит свой итог.
-        <div class="demo-row"><button data-go="#result">Посмотреть пример итога</button></div>` : `
-        В настоящем марафоне дни открываются по календарю. Здесь можно перемотать время и пройти всё за пару минут.
-        <div class="demo-row">
-          <button data-act="off" data-v="-1">← Вчера</button>
-          <button data-act="off" data-v="1">Завтра →</button>
-        </div>`}
-        <button class="link" data-act="reset">Начать заново</button>
-      </div>` : ""}
+      ${CONFIG.demo ? `<button class="link reveal" data-act="reset">Начать заново</button>` : ""}
       <button class="btn ghost contact" data-act="curator">${esc(CONFIG.curatorLabel)}</button>
       <div class="note">${esc(CONFIG.footnote)}</div>
     </main>`;
@@ -1004,7 +1065,7 @@ function renderDay(n) {
       <button class="round browser-only" data-go="#" aria-label="Все дни">‹</button>
       <div class="hero-text">
         <div class="kicker rise" style="--d:.1s">День ${n} из ${TOTAL} · ${fmtLong(dayDate(n))}</div>
-        <h1 class="rise" style="--d:.2s">${esc(d.title)}</h1>
+        ${h1Split(d.title, .2)}
         <div class="hand rise" style="--d:.32s">${esc(d.hand)}</div>
         ${segsHtml(n)}
       </div>
@@ -1107,6 +1168,7 @@ function paintDay(n) {
 
 function renderDish(n, key) {
   const m = CONFIG.days[n - 1].meals[key];
+  backToDish = key;
   app.innerHTML = `
     <div class="dish-top">
       <button class="round browser-only" data-go="#day${n}" aria-label="Назад">‹</button>
@@ -1182,10 +1244,9 @@ function renderResult() {
       <button class="round browser-only" data-go="#" aria-label="Назад">‹</button>
       <div class="kicker rise">${sample ? "Пример итога" : "Итог марафона"}</div>
       <div class="rise" style="--d:.1s">${ringHtml(pct, true)}</div>
-      <h1 class="rise" style="--d:.3s">${esc(band.title)}</h1>
+      ${h1Split(band.title, .3)}
       <div class="hand rise" style="--d:.4s">${esc(band.hand)}</div>
       <p class="rise" style="--d:.5s">Вы выполнили ${pct}% рекомендаций. ${esc(band.text)}</p>
-      ${sample ? `<p class="rise" style="--d:.6s"><b>Это пример экрана, цифры для показа.</b> Так итог выглядит в конце настоящего марафона.</p>` : ""}
     </header>
     <main class="sheet">
       ${ratio(best) > ratio(worst) ? `
@@ -1340,8 +1401,15 @@ function route() {
   const dayOk = n >= 1 && n <= TOTAL && isOpen(n);
   const dishOk = dayOk && !!MEAL_NAMES[key];
   const resultOk = location.hash === "#result" && (allDone() || !!CONFIG.openDays);
+  const fromDish = backToDish;
+  backToDish = "";
   if (dishOk) renderDish(n, key);
-  else if (dayOk && !key) renderDay(n);
+  else if (dayOk && !key) {
+    renderDay(n);
+    // возвращаемся из рецепта: фото улетает обратно в свою карточку
+    const pic = fromDish && app.querySelector(`[data-go="#day${n}/${fromDish}"] .meal-pic`);
+    if (pic) { pic.style.viewTransitionName = "dish"; pic.closest(".meal").classList.add("in"); }
+  }
   else if (resultOk) renderResult();
   else renderHome();
   if (inTelegram) { if (dishOk || (dayOk && !key) || resultOk) tg.BackButton.show(); else tg.BackButton.hide(); }
@@ -1360,8 +1428,16 @@ function bindEvents() {
     meta.in = true;
     if (CONFIG.startDate === "auto" && meta.start == null) meta.start = realToday();
     saveMeta();
-    route();
+    transition(route);
   });
+
+  app.addEventListener("click", e => {
+    const meal = e.target.closest(".meal[data-go]");
+    if (meal && document.startViewTransition && !calm()) {
+      const pic = meal.querySelector(".meal-pic");
+      if (pic) { pic.style.viewTransitionName = "dish"; document.documentElement.classList.add("vt-dish"); }
+    }
+  }, true);
 
   app.addEventListener("click", e => {
     const goEl = e.target.closest("[data-go]");
@@ -1467,7 +1543,7 @@ function bindEvents() {
     }
   });
 
-  addEventListener("hashchange", route);
+  addEventListener("hashchange", () => transition(route));
 }
 
 function initTelegram() {
